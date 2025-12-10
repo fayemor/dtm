@@ -1,136 +1,246 @@
-<script type="module">
-    // 1. Importations
-    import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import {getFirestore, collection, getDocs, doc, deleteDoc} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import * as XLSX from "https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.mjs";
+<!DOCTYPE html>
+<html lang="fr">
 
-    // 2. CONFIGURATION FIREBASE (REMETS TES CODES ICI !)
-    const firebaseConfig = {
-        apiKey: "AIzaSyAgO32iFQHG5LZPNRlPUbTmVef3bqs_5xk",
-        authDomain: "dtm-ugb.firebaseapp.com",
-        projectId: "dtm-ugb",
-        storageBucket: "dtm-ugb.firebasestorage.app",
-        messagingSenderId: "346661138136",
-        appId: "1:346661138136:web:cf8e8196a65bda13e631ad",
-        measurementId: "G-7ZVQ65D3RK"
-    };
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - DTM</title>
 
-    // 3. Initialisation
-    let app, db;
-    try {
-        app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        console.log("Firebase connecté !");
-    } catch (error) {
-        console.error("Erreur Firebase:", error);
-        alert("Erreur de connexion à la base de données. Vérifie la console (F12).");
-    }
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    // 4. RENDRE LES FONCTIONS GLOBALES (C'est ça qui manquait ou qui bloquait)
-    window.verifyAdmin = verifyAdmin;
-    window.delUser = delUser;
-    window.exportXLSX = exportXLSX;
-    window.postNews = postNews; // Si tu as ajouté la fonction postNews
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-    // --- FONCTION DE CONNEXION ---
-    function verifyAdmin() {
-        console.log("Tentative de connexion..."); // Pour vérifier si le bouton marche
-        const pass = document.getElementById('adminPassword').value;
-
-        if (pass === 'dtm2025') {
-            document.getElementById('adminLogin').classList.add('hidden');
-            document.getElementById('adminPanel').classList.remove('hidden');
-            loadMembers(); // Charger les données
-        } else {
-            alert("Mot de passe incorrect !");
+    <script>
+        tailwind.config = {theme: {extend: {colors: {dtm: {light: '#e0f2fe', primary: '#0284c7', dark: '#0c4a6e'}}}}}
+    </script>
+    <style>
+        body {
+            background-image: url('https://images.unsplash.com/photo-1638202993928-7267aad84c31?q=80&w=1920');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
         }
-    }
 
-    // --- CHARGER LES MEMBRES ---
-    async function loadMembers() {
-        const tbody = document.getElementById('tbody');
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4">Chargement...</td></tr>';
-
-        try {
-            const querySnapshot = await getDocs(collection(db, "membres"));
-            document.getElementById('count').innerText = querySnapshot.size;
-            tbody.innerHTML = '';
-
-            querySnapshot.forEach((doc) => {
-                const u = doc.data();
-                const docId = doc.id;
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-gray-50 border-b">
-                        <td class="px-4 py-3"><img src="${u.photo}" class="w-10 h-10 rounded-full object-cover"></td>
-                        <td class="px-4 py-3">
-                            <div class="font-bold text-black">${u.prenom} ${u.nom}</div>
-                            <div class="text-xs text-gray-500">${u.id}</div>
-                        </td>
-                        <td class="px-4 py-3 text-xs">
-                            <div>${u.telephone}</div>
-                            <div class="truncate max-w-[120px]">${u.email}</div>
-                        </td>
-                        <td class="px-4 py-3">${u.specialite} (${u.niveau})</td>
-                        <td class="px-4 py-3 text-dtm-primary font-medium">${u.poste}</td>
-                        <td class="px-4 py-3 text-center">
-                            <button onclick="delUser('${docId}')" class="text-red-500 hover:bg-red-100 p-2 rounded"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            });
-        } catch (e) {
-            console.error("Erreur lecture:", e);
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-red-500 p-4">Erreur de chargement. Vérifie tes droits Firebase.</td></tr>';
+        .glass-overlay {
+            background-color: rgba(255, 255, 255, 0.95);
+            min-height: 100vh;
         }
-    }
 
-    // --- SUPPRIMER UN MEMBRE ---
-    async function delUser(docId) {
-        if (confirm('Supprimer définitivement ?')) {
-            try {
-                await deleteDoc(doc(db, "membres", docId));
-                loadMembers(); // Recharger la liste
-            } catch (e) {
-                alert("Erreur suppression: " + e.message);
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
-    }
+    </style>
+</head>
 
-    // --- EXPORT EXCEL (.xlsx) ---
-    async function exportXLSX() {
+<body>
+    <div class="glass-overlay p-4">
+
+        <div id="adminLogin" class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-xl mt-20 border border-gray-100">
+            <h2 class="text-2xl font-bold text-center mb-6">Accès Administrateur</h2>
+            <input type="password" id="adminPassword" placeholder="Mot de passe (dtm2025)"
+                class="w-full px-4 py-3 mb-4 border rounded-xl">
+            <button onclick="verifyAdmin()"
+                class="w-full bg-dtm-dark text-white py-3 rounded-xl font-bold hover:bg-dtm-primary transition-colors">Entrer</button>
+            <p class="mt-4 text-center"><a href="index.html" class="text-gray-400 text-sm">Retour</a></p>
+        </div>
+
+        <div id="adminPanel" class="hidden max-w-[95%] mx-auto fade-in mt-10">
+            <div
+                class="flex flex-col md:flex-row justify-between items-center mb-8 bg-white p-4 rounded-xl shadow-sm gap-4">
+                <h2 class="text-2xl font-bold text-dtm-dark">Administration</h2>
+                <div class="flex gap-3">
+                    <button onclick="exportXLSX()"
+                        class="bg-green-600 text-white px-5 py-2 rounded-lg font-bold shadow hover:bg-green-700 flex items-center transition-colors">
+                        <i class="fa-solid fa-file-excel mr-2"></i> Exporter Excel (.xlsx)
+                    </button>
+                    <button onclick="window.location.href='index.html'"
+                        class="bg-red-500 text-white px-5 py-2 rounded-lg font-bold shadow hover:bg-red-600 transition-colors">
+                        <i class="fa-solid fa-sign-out-alt mr-2"></i> Quitter
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+                    <div class="p-4 border-b bg-gray-50 font-bold flex justify-between">
+                        <span>Liste des Membres</span>
+                        <span class="bg-dtm-primary text-white text-xs px-2 py-1 rounded" id="count">0</span>
+                    </div>
+                    <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+                        <table class="w-full text-sm text-left text-gray-500">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0">
+                                <tr>
+                                    <th class="px-4 py-3">Photo</th>
+                                    <th class="px-4 py-3">Infos</th>
+                                    <th class="px-4 py-3">Contacts</th>
+                                    <th class="px-4 py-3">Cursus</th>
+                                    <th class="px-4 py-3">Poste</th>
+                                    <th class="px-4 py-3 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-1 bg-white rounded-2xl shadow-lg border border-gray-200 p-6 h-fit sticky top-4">
+                    <h3 class="font-bold text-lg mb-4 border-b pb-2"><i class="fa-solid fa-pen-nib mr-2"></i>Publier une
+                        Actualité</h3>
+                    <p class="text-xs text-gray-400 mb-4">Fonctionnalité désactivée temporairement (Nécessite Firebase
+                        Storage pour les images).</p>
+                    <form onsubmit="event.preventDefault(); alert('Bientôt disponible avec Firebase Storage');"
+                        class="space-y-4 opacity-50">
+                        <input type="text" placeholder="Titre" disabled class="w-full border rounded p-2">
+                        <button disabled
+                            class="w-full bg-gray-400 text-white font-bold py-3 rounded-xl cursor-not-allowed">Publier</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import {getFirestore, collection, getDocs, doc, deleteDoc} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgO32iFQHG5LZPNRlPUbTmVef3bqs_5xk",
+            authDomain: "dtm-ugb.firebaseapp.com",
+            projectId: "dtm-ugb",
+            storageBucket: "dtm-ugb.firebasestorage.app",
+            messagingSenderId: "346661138136",
+            appId: "1:346661138136:web:cf8e8196a65bda13e631ad",
+            measurementId: "G-7ZVQ65D3RK"
+        };
+
+        // Initialisation
+        let app, db;
         try {
-            const querySnapshot = await getDocs(collection(db, "membres"));
-            if (querySnapshot.empty) {alert("Aucune donnée à exporter."); return;}
-
-            let data = [];
-            querySnapshot.forEach((doc) => {
-                const u = doc.data();
-                // On nettoie les données (pas de photo base64 car trop lourd pour Excel)
-                data.push({
-                    ID: u.id,
-                    Prénom: u.prenom,
-                    Nom: u.nom,
-                    Email: u.email,
-                    Téléphone: u.telephone,
-                    Spécialité: u.specialite,
-                    Niveau: u.niveau,
-                    Poste: u.poste,
-                    Date: u.date || ''
-                });
-            });
-
-            const worksheet = XLSX.utils.json_to_sheet(data);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Membres DTM");
-            XLSX.writeFile(workbook, "Membres_DTM.xlsx");
-        } catch (e) {
-            console.error(e);
-            alert("Erreur export: " + e.message);
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            console.log("Firebase OK");
+        } catch (error) {
+            console.error("Erreur Firebase:", error);
         }
-    }
 
-    // --- PUBLIER ACTUALITÉ (Optionnel si tu l'as gardé) ---
-    // (Ajoute ta fonction postNews ici si besoin, similaire à l'étape précédente)
+        // Rendre les fonctions accessibles au HTML
+        window.verifyAdmin = verifyAdmin;
+        window.delUser = delUser;
+        window.exportXLSX = exportXLSX;
 
-</script>
+        // --- CONNEXION ---
+        function verifyAdmin() {
+            const pass = document.getElementById('adminPassword').value;
+            if (pass === 'dtm2025') {
+                document.getElementById('adminLogin').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                loadMembers();
+            } else {
+                alert("Mot de passe incorrect !");
+            }
+        }
+
+        // --- CHARGEMENT ---
+        async function loadMembers() {
+            const tbody = document.getElementById('tbody');
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4">Chargement depuis le Cloud...</td></tr>';
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "membres"));
+                document.getElementById('count').innerText = querySnapshot.size;
+                tbody.innerHTML = '';
+
+                querySnapshot.forEach((doc) => {
+                    const u = doc.data();
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-gray-50 border-b">
+                            <td class="px-4 py-3"><img src="${u.photo}" class="w-10 h-10 rounded-full object-cover shadow-sm"></td>
+                            <td class="px-4 py-3">
+                                <div class="font-bold text-black">${u.prenom} ${u.nom}</div>
+                                <div class="text-xs text-gray-500">${u.id}</div>
+                            </td>
+                            <td class="px-4 py-3 text-xs">
+                                <div>${u.telephone}</div>
+                                <div class="truncate max-w-[120px]" title="${u.email}">${u.email}</div>
+                            </td>
+                            <td class="px-4 py-3">${u.specialite} <span class="text-xs bg-gray-100 px-1 rounded">${u.niveau}</span></td>
+                            <td class="px-4 py-3 text-dtm-primary font-medium">${u.poste}</td>
+                            <td class="px-4 py-3 text-center">
+                                <button onclick="delUser('${doc.id}')" class="text-red-500 hover:bg-red-100 p-2 rounded transition-colors"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (e) {
+                console.error("Erreur lecture:", e);
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-red-500 p-4 font-bold">Erreur de chargement. Vérifie tes clés Firebase dans le code !</td></tr>';
+            }
+        }
+
+        // --- SUPPRESSION ---
+        async function delUser(docId) {
+            if (confirm('Es-tu sûr de vouloir supprimer ce membre définitivement ?')) {
+                try {
+                    await deleteDoc(doc(db, "membres", docId));
+                    loadMembers(); // Rafraîchir la liste
+                } catch (e) {
+                    alert("Erreur: " + e.message);
+                }
+            }
+        }
+
+        // --- EXPORT EXCEL (.xlsx) ---
+        async function exportXLSX() {
+            // Vérification si la librairie est chargée
+            if (typeof XLSX === 'undefined') {
+                alert("La librairie Excel n'est pas chargée. Vérifie ta connexion internet.");
+                return;
+            }
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "membres"));
+                if (querySnapshot.empty) {alert("Aucune donnée à exporter."); return;}
+
+                let data = [];
+                querySnapshot.forEach((doc) => {
+                    const u = doc.data();
+                    // On prépare les données propres pour Excel
+                    data.push({
+                        ID: u.id,
+                        Prénom: u.prenom,
+                        Nom: u.nom,
+                        Email: u.email,
+                        Téléphone: u.telephone,
+                        Spécialité: u.specialite,
+                        Niveau: u.niveau,
+                        Poste: u.poste,
+                        Date_Inscription: u.date || ''
+                    });
+                });
+
+                // Création du fichier Excel
+                const worksheet = XLSX.utils.json_to_sheet(data);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Membres DTM");
+
+                // Téléchargement
+                XLSX.writeFile(workbook, "Liste_Membres_DTM.xlsx");
+
+            } catch (e) {
+                console.error(e);
+                alert("Erreur export: " + e.message);
+            }
+        }
+    </script>
+</body>
+
+</html>
