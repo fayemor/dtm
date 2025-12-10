@@ -25,31 +25,6 @@
             animation: fadeIn 0.8s ease-out forwards;
         }
 
-        /* Animation pour l'article partagé */
-        @keyframes highlightPulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.7);
-                border-color: #0284c7;
-                transform: scale(1.02);
-            }
-
-            70% {
-                box-shadow: 0 0 0 20px rgba(2, 132, 199, 0);
-                border-color: #0284c7;
-                transform: scale(1.02);
-            }
-
-            100% {
-                box-shadow: 0 0 0 0 rgba(2, 132, 199, 0);
-                transform: scale(1);
-            }
-        }
-
-        .highlight-news {
-            animation: highlightPulse 2s ease-out;
-            border: 2px solid #0284c7 !important;
-        }
-
         @keyframes fadeIn {
             to {
                 opacity: 1;
@@ -74,10 +49,13 @@
 
         <div class="pt-32 pb-12 px-4 max-w-screen-xl mx-auto fade-in">
             <h2 class="text-3xl font-bold text-dtm-dark mb-10 text-center border-b pb-4">Fil d'actualités</h2>
+
+            <div id="statusMsg" class="text-center mb-4 text-sm text-gray-500">Connexion...</div>
+
             <div id="newsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="col-span-full text-center py-20"><i
-                        class="fa-solid fa-circle-notch fa-spin text-4xl text-dtm-primary mb-4"></i>
-                    <p class="text-gray-500">Chargement...</p>
+                <div class="col-span-full text-center py-20">
+                    <i class="fa-solid fa-circle-notch fa-spin text-4xl text-dtm-primary mb-4"></i>
+                    <p class="text-gray-500">Chargement des données...</p>
                 </div>
             </div>
         </div>
@@ -87,6 +65,7 @@
         import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import {getFirestore, collection, getDocs, query} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // --- TES CLES FIREBASE (J'ai repris celles de ton image admin) ---
         const firebaseConfig = {
             apiKey: "AIzaSyAgO32iFQHG5LZPNRlPUbTmVef3bqs_5xk",
             authDomain: "dtm-ugb.firebaseapp.com",
@@ -102,60 +81,62 @@
 
         async function loadNews() {
             const container = document.getElementById('newsContainer');
-
-            // 1. Récupérer l'ID dans l'URL s'il existe (pour le partage)
-            const urlParams = new URLSearchParams(window.location.search);
-            const targetId = urlParams.get('id');
+            const status = document.getElementById('statusMsg');
 
             try {
+                // On récupère la collection "actualites"
                 const q = query(collection(db, "actualites"));
                 const querySnapshot = await getDocs(q);
 
                 if (querySnapshot.empty) {
-                    container.innerHTML = `<div class="col-span-full text-center py-10 text-gray-500">Aucune actualité.</div>`;
+                    status.innerText = "Base connectée : 0 article trouvé.";
+                    container.innerHTML = `
+                        <div class="col-span-full text-center py-10 bg-white rounded-xl shadow p-8">
+                            <i class="fa-regular fa-newspaper text-4xl text-gray-300 mb-4"></i>
+                            <p class="text-gray-500">Aucune actualité n'est disponible.</p>
+                            <p class="text-xs text-gray-400 mt-2">Pourtant, j'ai vu ta base de données, il y a un document 'Test'.<br>Vérifie les 'Règles' Firestore (Étape 1).</p>
+                        </div>`;
                     return;
                 }
 
+                status.innerText = `Base connectée : ${querySnapshot.size} article(s) trouvé(s).`;
                 container.innerHTML = '';
 
                 querySnapshot.forEach((doc) => {
                     const item = doc.data();
-                    const docId = doc.id;
+                    // Image par défaut si vide
                     const imgUrl = item.image || 'https://placehold.co/600x400?text=Image+Manquante';
 
-                    // Vérifier si c'est l'article partagé
-                    const isTarget = (docId === targetId);
-                    const highlightClass = isTarget ? 'highlight-news ring-4 ring-blue-100' : '';
-
                     container.innerHTML += `
-                        <div id="${docId}" class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 group flex flex-col h-full ${highlightClass}">
+                        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 group flex flex-col h-full">
                             <div class="h-56 overflow-hidden relative bg-gray-100">
-                                <img src="${imgUrl}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy">
+                                <img src="${imgUrl}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                                 <div class="absolute top-3 right-3 bg-dtm-primary text-white text-xs font-bold px-3 py-1 rounded-full shadow border border-white/20">${item.categorie || 'Info'}</div>
                             </div>
                             <div class="p-6 flex flex-col flex-grow">
-                                <div class="text-xs text-gray-400 mb-2 flex items-center"><i class="fa-regular fa-calendar mr-2"></i> ${item.date || ''}</div>
-                                <h3 class="text-xl font-bold text-gray-800 mb-3 leading-tight">${item.titre}</h3>
+                                <div class="text-xs text-gray-400 mb-2 flex items-center">
+                                    <i class="fa-regular fa-calendar mr-2"></i> ${item.date || 'Date inconnue'}
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-3 leading-tight">${item.titre || 'Sans titre'}</h3>
                                 <p class="text-gray-600 text-sm line-clamp-3 mb-6 flex-grow">${item.description || ''}</p>
-                                <button onclick="alert('${(item.description || '').replace(/'/g, "\\'").replace(/\n/g, " ")}')" class="text-dtm-primary font-bold text-sm hover:bg-blue-50 p-2 rounded-lg self-start mt-auto transition-colors">Lire la suite <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                                <button onclick="alert('${(item.description || '').replace(/'/g, "\\'")}')" class="text-dtm-primary font-bold text-sm hover:bg-blue-50 p-2 rounded-lg self-start mt-auto transition-colors">
+                                    Lire la suite <i class="fa-solid fa-arrow-right ml-1"></i>
+                                </button>
                             </div>
                         </div>
                     `;
                 });
 
-                // Si on a un ID cible, on scrolle vers lui après un court délai
-                if (targetId) {
-                    setTimeout(() => {
-                        const targetElement = document.getElementById(targetId);
-                        if (targetElement) {
-                            targetElement.scrollIntoView({behavior: 'smooth', block: 'center'});
-                        }
-                    }, 500);
-                }
-
             } catch (error) {
                 console.error(error);
-                container.innerHTML = `<div class="col-span-full text-center text-red-500">Erreur de chargement.</div>`;
+                status.innerText = "Erreur de connexion !";
+                container.innerHTML = `
+                    <div class="col-span-full text-center text-red-600 py-10 bg-red-50 rounded-xl border border-red-200 p-4">
+                        <i class="fa-solid fa-lock text-3xl mb-2"></i><br>
+                        <strong>Accès Refusé (Permission Denied)</strong><br>
+                        Le code n'a pas le droit de lire la base de données.<br><br>
+                        <span class="text-black font-bold">SOLUTION :</span> Fais l'étape 1 ci-dessus (Changer les Règles Firestore).
+                    </div>`;
             }
         }
 
