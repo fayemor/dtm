@@ -49,35 +49,99 @@
 
         <div class="pt-32 pb-12 px-4 max-w-screen-xl mx-auto fade-in">
             <h2 class="text-3xl font-bold text-dtm-dark mb-10 text-center border-b pb-4">Fil d'actualités</h2>
-            <div id="newsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-            <div id="noNews" class="hidden text-center text-gray-500 py-10">Aucune actualité publiée.</div>
+
+            <div id="statusMsg" class="text-center mb-4 text-sm text-gray-500">Connexion...</div>
+
+            <div id="newsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="col-span-full text-center py-20">
+                    <i class="fa-solid fa-circle-notch fa-spin text-4xl text-dtm-primary mb-4"></i>
+                    <p class="text-gray-500">Chargement des données...</p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script>
-        const news = JSON.parse(localStorage.getItem('dtm_news')) || [];
-        const container = document.getElementById('newsContainer');
+    <script type="module">
+        import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import {getFirestore, collection, getDocs, query} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        if (news.length === 0) {
-            document.getElementById('noNews').classList.remove('hidden');
-        } else {
-            news.forEach(item => {
-                container.innerHTML += `
-                    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 group">
-                        <div class="h-56 overflow-hidden relative">
-                            <img src="${item.image}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                            <div class="absolute top-3 right-3 bg-dtm-primary text-white text-xs font-bold px-3 py-1 rounded-full shadow">${item.tag}</div>
+        // --- TES CLES FIREBASE (J'ai repris celles de ton image admin) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgO32iFQHG5LZPNRlPUbTmVef3bqs_5xk",
+            authDomain: "dtm-ugb.firebaseapp.com",
+            projectId: "dtm-ugb",
+            storageBucket: "dtm-ugb.firebasestorage.app",
+            messagingSenderId: "346661138136",
+            appId: "1:346661138136:web:cf8e8196a65bda13e631ad",
+            measurementId: "G-7ZVQ65D3RK"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadNews() {
+            const container = document.getElementById('newsContainer');
+            const status = document.getElementById('statusMsg');
+
+            try {
+                // On récupère la collection "actualites"
+                const q = query(collection(db, "actualites"));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    status.innerText = "Base connectée : 0 article trouvé.";
+                    container.innerHTML = `
+                        <div class="col-span-full text-center py-10 bg-white rounded-xl shadow p-8">
+                            <i class="fa-regular fa-newspaper text-4xl text-gray-300 mb-4"></i>
+                            <p class="text-gray-500">Aucune actualité n'est disponible.</p>
+                            <p class="text-xs text-gray-400 mt-2">Pourtant, j'ai vu ta base de données, il y a un document 'Test'.<br>Vérifie les 'Règles' Firestore (Étape 1).</p>
+                        </div>`;
+                    return;
+                }
+
+                status.innerText = `Base connectée : ${querySnapshot.size} article(s) trouvé(s).`;
+                container.innerHTML = '';
+
+                querySnapshot.forEach((doc) => {
+                    const item = doc.data();
+                    // Image par défaut si vide
+                    const imgUrl = item.image || 'https://placehold.co/600x400?text=Image+Manquante';
+
+                    container.innerHTML += `
+                        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 group flex flex-col h-full">
+                            <div class="h-56 overflow-hidden relative bg-gray-100">
+                                <img src="${imgUrl}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                                <div class="absolute top-3 right-3 bg-dtm-primary text-white text-xs font-bold px-3 py-1 rounded-full shadow border border-white/20">${item.categorie || 'Info'}</div>
+                            </div>
+                            <div class="p-6 flex flex-col flex-grow">
+                                <div class="text-xs text-gray-400 mb-2 flex items-center">
+                                    <i class="fa-regular fa-calendar mr-2"></i> ${item.date || 'Date inconnue'}
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-3 leading-tight">${item.titre || 'Sans titre'}</h3>
+                                <p class="text-gray-600 text-sm line-clamp-3 mb-6 flex-grow">${item.description || ''}</p>
+                                <button onclick="alert('${(item.description || '').replace(/'/g, "\\'")}')" class="text-dtm-primary font-bold text-sm hover:bg-blue-50 p-2 rounded-lg self-start mt-auto transition-colors">
+                                    Lire la suite <i class="fa-solid fa-arrow-right ml-1"></i>
+                                </button>
+                            </div>
                         </div>
-                        <div class="p-6">
-                            <div class="text-xs text-gray-400 mb-2"><i class="fa-regular fa-calendar mr-1"></i> ${item.date}</div>
-                            <h3 class="text-xl font-bold text-gray-800 mb-3">${item.title}</h3>
-                            <p class="text-gray-600 text-sm line-clamp-3">${item.desc}</p>
-                        </div>
-                    </div>
-                `;
-            });
+                    `;
+                });
+
+            } catch (error) {
+                console.error(error);
+                status.innerText = "Erreur de connexion !";
+                container.innerHTML = `
+                    <div class="col-span-full text-center text-red-600 py-10 bg-red-50 rounded-xl border border-red-200 p-4">
+                        <i class="fa-solid fa-lock text-3xl mb-2"></i><br>
+                        <strong>Accès Refusé (Permission Denied)</strong><br>
+                        Le code n'a pas le droit de lire la base de données.<br><br>
+                        <span class="text-black font-bold">SOLUTION :</span> Fais l'étape 1 ci-dessus (Changer les Règles Firestore).
+                    </div>`;
+            }
         }
-    </script>
+
+        loadNews();
+    </script> 
 </body>
 
 </html>
