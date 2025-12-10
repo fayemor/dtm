@@ -67,7 +67,10 @@
                     <input type="password" id="loginPassword" required
                         class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-dtm-primary focus:ring-2 focus:ring-dtm-light outline-none">
                 </div>
-                <button type="submit"
+
+                <div id="errorMessage" class="hidden p-3 bg-red-100 text-red-700 rounded-lg text-sm text-center"></div>
+
+                <button type="submit" id="loginBtn"
                     class="w-full bg-dtm-primary hover:bg-blue-600 text-white font-bold py-3.5 rounded-xl shadow-lg transition-transform hover:scale-[1.02]">Se
                     connecter</button>
             </form>
@@ -77,19 +80,75 @@
         </div>
     </div>
 
-    <script>
-        function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const pass = document.getElementById('loginPassword').value;
-            const users = JSON.parse(localStorage.getItem('dtm_users')) || [];
-            const user = users.find(u => u.email === email && u.password === pass);
+    <script type="module">
+        import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import {getFirestore, collection, query, where, getDocs} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-            if (user) {
-                localStorage.setItem('dtm_currentUser', JSON.stringify(user));
-                window.location.href = "dashboard.html";
-            } else {
-                alert("Identifiants incorrects. Veuillez réessayer.");
+        // ----------------------------------------------------
+        // COLLE TES INFOS FIREBASE ICI (Celles que tu as mises dans admin.html)
+        // ----------------------------------------------------
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgO32iFQHG5LZPNRlPUbTmVef3bqs_5xk",
+            authDomain: "dtm-ugb.firebaseapp.com",
+            projectId: "dtm-ugb",
+            storageBucket: "dtm-ugb.firebasestorage.app",
+            messagingSenderId: "346661138136",
+            appId: "1:346661138136:web:cf8e8196a65bda13e631ad",
+            measurementId: "G-7ZVQ65D3RK"
+        };
+
+        // Initialisation
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Rendre la fonction accessible au bouton HTML
+        window.handleLogin = handleLogin;
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            const errorDiv = document.getElementById('errorMessage');
+
+            // UI : Chargement
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Connexion...';
+            btn.disabled = true;
+            errorDiv.classList.add('hidden');
+
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                // 1. Chercher l'utilisateur avec cet email dans Firebase
+                const q = query(collection(db, "membres"), where("email", "==", email));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    throw new Error("Aucun compte trouvé avec cet email.");
+                }
+
+                // 2. Vérifier le mot de passe
+                let userFound = null;
+                querySnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    if (userData.password === password) {
+                        userFound = userData;
+                    }
+                });
+
+                if (userFound) {
+                    // 3. Succès ! On sauvegarde dans la session locale pour le Dashboard
+                    localStorage.setItem('dtm_currentUser', JSON.stringify(userFound));
+                    window.location.href = "dashboard.html";
+                } else {
+                    throw new Error("Mot de passe incorrect.");
+                }
+
+            } catch (error) {
+                console.error("Erreur login:", error);
+                errorDiv.innerText = error.message;
+                errorDiv.classList.remove('hidden');
+                btn.innerHTML = 'Se connecter';
+                btn.disabled = false;
             }
         }
     </script>
