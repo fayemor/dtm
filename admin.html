@@ -45,7 +45,7 @@
 
         <div id="adminLogin" class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-xl mt-20 border border-gray-100">
             <h2 class="text-2xl font-bold text-center mb-6">Accès Administrateur</h2>
-            <input type="password" id="adminPassword" placeholder="Mot de passe (dtm2025)"
+            <input type="password" id="adminPassword" placeholder="Saisir le mot de passe"
                 class="w-full px-4 py-3 mb-4 border rounded-xl">
             <button onclick="verifyAdmin()"
                 class="w-full bg-dtm-dark text-white py-3 rounded-xl font-bold hover:bg-dtm-primary transition-colors">Entrer</button>
@@ -167,7 +167,7 @@
         // --- CONNEXION ---
         function verifyAdmin() {
             const pass = document.getElementById('adminPassword').value;
-            if (pass === 'dtm2025') {
+            if (pass === 'admin-dtm-2025') {
                 document.getElementById('adminLogin').classList.add('hidden');
                 document.getElementById('adminPanel').classList.remove('hidden');
                 loadMembers();
@@ -292,3 +292,4 @@
 </body>
 
 </html>
+
