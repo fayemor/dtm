@@ -92,15 +92,44 @@
                 </div>
 
                 <div class="lg:col-span-1 bg-white rounded-2xl shadow-lg border border-gray-200 p-6 h-fit sticky top-4">
-                    <h3 class="font-bold text-lg mb-4 border-b pb-2"><i class="fa-solid fa-pen-nib mr-2"></i>Publier une
-                        Actualité</h3>
-                    <p class="text-xs text-gray-400 mb-4">Fonctionnalité désactivée temporairement (Nécessite Firebase
-                        Storage pour les images).</p>
-                    <form onsubmit="event.preventDefault(); alert('Bientôt disponible avec Firebase Storage');"
-                        class="space-y-4 opacity-50">
-                        <input type="text" placeholder="Titre" disabled class="w-full border rounded p-2">
-                        <button disabled
-                            class="w-full bg-gray-400 text-white font-bold py-3 rounded-xl cursor-not-allowed">Publier</button>
+                    <h3 class="font-bold text-lg mb-4 border-b pb-2">
+                        <i class="fa-solid fa-pen-nib mr-2"></i>Publier une Actualité
+                    </h3>
+
+                    <form onsubmit="postNews(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1">Titre</label>
+                            <input type="text" id="newsTitle" placeholder="Titre de l'info" required
+                                class="w-full border rounded p-2 focus:ring-2 focus:ring-dtm-primary outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1">Image (Depuis ton
+                                appareil)</label>
+                            <input type="file" id="newsImage" accept="image/*" required
+                                class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-dtm-light file:text-dtm-dark hover:file:bg-blue-100 cursor-pointer">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1">Catégorie</label>
+                            <select id="newsTag" class="w-full border rounded p-2 bg-white">
+                                <option value="Social">Social</option>
+                                <option value="Formation">Formation</option>
+                                <option value="Culturel">Culturel</option>
+                                <option value="Info">Info</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1">Description</label>
+                            <textarea id="newsDesc" rows="4" placeholder="Écrire les détails ici..." required
+                                class="w-full border rounded p-2 focus:ring-2 focus:ring-dtm-primary outline-none"></textarea>
+                        </div>
+
+                        <button type="submit"
+                            class="w-full bg-dtm-dark hover:bg-dtm-primary text-white font-bold py-3 rounded-xl transition-all shadow-md">
+                            Publier
+                        </button>
                     </form>
                 </div>
             </div>
