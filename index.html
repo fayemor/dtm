@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil - DTM UGB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {theme: {extend: {colors: {dtm: {light: '#e0f2fe', primary: '#0284c7', dark: '#0c4a6e'}}}}}
+    </script>
+    <style>
+        body {
+            background-image: url('https://images.unsplash.com/photo-1638202993928-7267aad84c31?q=80&w=1920');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
+
+        .glass-overlay {
+            background-color: rgba(255, 255, 255, 0.92);
+            min-height: 100vh;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glass-overlay">
+        <nav class="fixed w-full z-50 top-0 start-0 bg-white/95 backdrop-blur-md border-b shadow-sm transition-all">
+            <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-2">
+                <a href="index.html" class="flex items-center space-x-3 group">
+                    <img src="logo.png" class="h-20 w-auto transition-transform group-hover:scale-105" alt="DTM Logo"
+                        onerror="this.src='https://cdn-icons-png.flaticon.com/512/1034/1034179.png'">
+                    <span class="self-center text-2xl font-bold text-dtm-dark hidden sm:block">DTM UGB</span>
+                </a>
+
+                <div class="flex md:order-2 space-x-3">
+                    <a href="admin.html"
+                        class="text-white bg-dtm-dark hover:bg-dtm-primary font-medium rounded-full text-sm px-6 py-2.5 transition-all shadow-lg hover:shadow-xl flex items-center">
+                        <i class="fa-solid fa-user-shield mr-2"></i>Admin
+                    </a>
+                    <button onclick="document.getElementById('navbar').classList.toggle('hidden')"
+                        class="md:hidden p-2 text-gray-500 rounded-lg hover:bg-gray-100">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+
+                <div class="hidden w-full md:flex md:w-auto md:order-1" id="navbar">
+                    <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium md:flex-row md:space-x-8 md:mt-0">
+                        <li><a href="index.html"
+                                class="block py-2 px-3 text-dtm-primary font-bold border-b-2 border-dtm-primary">Accueil</a>
+                        </li>
+                        <li><a href="apropos.html"
+                                class="block py-2 px-3 text-gray-700 hover:text-dtm-primary transition-colors">À
+                                Propos</a></li>
+                        <li><a href="actualites.html"
+                                class="block py-2 px-3 text-gray-700 hover:text-dtm-primary transition-colors">Actualités</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <section class="min-h-screen flex items-center justify-center pt-20 fade-in">
+            <div class="text-center max-w-4xl px-6">
+                <h1 class="text-5xl md:text-7xl font-extrabold text-dtm-dark mb-6 tracking-tight leading-tight">
+                    Dahira Touba <br><span class="text-dtm-primary">Médecine</span>
+                </h1>
+                <p class="text-xl text-gray-600 mb-10 font-light max-w-2xl mx-auto">
+                    Université Gaston Berger de Saint-Louis.<br>
+                    <span class="font-semibold text-dtm-dark">Union, Solidarité et Excellence</span> au service de la
+                    communauté estudiantine et médicale.
+                </p>
+
+                <div class="flex flex-col sm:flex-row justify-center gap-6">
+                    <a href="inscription.html"
+                        class="px-10 py-4 bg-dtm-primary hover:bg-blue-600 text-white text-lg font-bold rounded-full shadow-xl transition-transform hover:scale-105">
+                        <i class="fa-solid fa-user-plus mr-2"></i> Devenir Membre
+                    </a>
+                    <a href="connexion.html"
+                        class="px-10 py-4 bg-white hover:bg-gray-50 text-dtm-dark text-lg font-bold rounded-full shadow-xl border border-gray-200 transition-transform hover:scale-105">
+                        <i class="fa-solid fa-right-to-bracket mr-2"></i> Se connecter
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+
+</html>

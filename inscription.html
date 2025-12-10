@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - DTM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {theme: {extend: {colors: {dtm: {light: '#e0f2fe', primary: '#0284c7', dark: '#0c4a6e'}}}}}
+    </script>
+    <style>
+        body {
+            background-image: url('https://images.unsplash.com/photo-1638202993928-7267aad84c31?q=80&w=1920');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
+
+        .glass-overlay {
+            background-color: rgba(255, 255, 255, 0.92);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        body {
+            background-image: url('https://images.unsplash.com/photo-1638202993928-7267aad84c31?q=80&w=1920');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
+
+        .glass-overlay {
+            background-color: rgba(255, 255, 255, 0.95);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+    </style>
+</head>
+
+<body>
+    <div class="glass-overlay py-12 px-4">
+        <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-8 border border-gray-100 fade-in relative">
+            <a href="index.html" class="absolute top-6 left-6 text-gray-400 hover:text-dtm-primary"><i
+                    class="fa-solid fa-arrow-left text-xl"></i></a>
+
+            <div class="text-center mb-8">
+                <img src="logo.png" class="h-20 mx-auto mb-4" onerror="this.style.display='none'">
+                <h2 class="text-3xl font-bold text-dtm-dark">Créer un compte</h2>
+            </div>
+
+            <form onsubmit="handleRegister(event)" class="space-y-6">
+                <div class="flex flex-col items-center mb-6">
+                    <div
+                        class="w-32 h-32 rounded-full bg-gray-50 border-4 border-dtm-light overflow-hidden mb-2 relative group shadow-inner">
+                        <img id="preview" class="w-full h-full object-cover hidden">
+                        <div id="placeholder" class="flex flex-col items-center justify-center h-full text-gray-400">
+                            <i class="fa-solid fa-camera text-3xl mb-1"></i>
+                            <span class="text-[10px]">Ajouter</span>
+                        </div>
+                    </div>
+                    <input type="file" id="userPhoto" accept="image/*" required onchange="previewImage(this)"
+                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-dtm-light file:text-dtm-dark hover:file:bg-blue-100 transition-colors mx-auto max-w-[250px]">
+                    <p class="text-xs text-red-500 font-bold mt-2 uppercase tracking-wide">* Obligatoire pour la
+                        carte de membre</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase ml-1">Prénom</label>
+                        <input type="text" id="prenom" required
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-dtm-primary focus:ring-2 focus:ring-dtm-light outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase ml-1">Nom</label>
+                        <input type="text" id="nom" required
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-dtm-primary focus:ring-2 focus:ring-dtm-light outline-none transition-all">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase ml-1">Email</label>
+                        <input type="email" id="email" required
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-dtm-primary focus:ring-2 focus:ring-dtm-light outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase ml-1">Téléphone</label>
+                        <input type="tel" id="telephone" required
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-dtm-primary focus:ring-2 focus:ring-dtm-light outline-none transition-all">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase ml-1">Spécialité</label>
+                        <select id="specialite" required
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-dtm-primary outline-none bg-white">
+                            <option value="">Choix...</option>
+                            <option>Médecine</option>
+                            <option>Pharmacie</option>
+                            <option>Odontologie</option>
+                            <option>Soins Infirmiers</option>
+                            <option>Sage-femme</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase ml-1">Niveau</label>
+                        <select id="niveau" required
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-dtm-primary outline-none bg-white">
+                            <option value="">Choix...</option>
+                            <option>L1</option>
+                            <option>L2</option>
+                            <option>L3</option>
+                            <option>M1</option>
+                            <option>M2</option>
+                            <option>Doctorat</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 uppercase ml-1">Commission</label>
+                        <select id="poste" required
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-dtm-primary outline-none bg-white">
+                            <option>Membre simple</option>
+                            <option>Communication</option>
+                            <option>Social</option>
+                            <option>Pédagogique</option>
+                            <option>Organisation</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase ml-1">Mot de passe</label>
+                    <input type="password" id="password" required
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-dtm-primary focus:ring-2 focus:ring-dtm-light outline-none transition-all">
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-dtm-primary hover:bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform hover:scale-[1.02]">Valider
+                    l'inscription</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('preview').src = e.target.result;
+                    document.getElementById('preview').classList.remove('hidden');
+                    document.getElementById('placeholder').classList.add('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const photoInput = document.getElementById('userPhoto');
+            if (photoInput.files.length === 0) {alert("Photo obligatoire !"); return;}
+
+            const reader = new FileReader();
+            reader.readAsDataURL(photoInput.files[0]);
+            reader.onload = function () {
+                let users = JSON.parse(localStorage.getItem('dtm_users')) || [];
+                const email = document.getElementById('email').value;
+                if (users.some(u => u.email === email)) {alert("Cet email est déjà inscrit."); return;}
+
+                const newUser = {
+                    id: 'DTM-' + (users.length + 101),
+                    prenom: document.getElementById('prenom').value,
+                    nom: document.getElementById('nom').value,
+                    email: email,
+                    telephone: document.getElementById('telephone').value,
+                    specialite: document.getElementById('specialite').value,
+                    niveau: document.getElementById('niveau').value,
+                    poste: document.getElementById('poste').value,
+                    password: document.getElementById('password').value,
+                    photo: reader.result,
+                    date: new Date().toLocaleDateString()
+                };
+                users.push(newUser);
+                localStorage.setItem('dtm_users', JSON.stringify(users));
+                alert("Compte créé avec succès !");
+                window.location.href = "connexion.html";
+            };
+        }
+    </script>
+</body>
+
+</html>

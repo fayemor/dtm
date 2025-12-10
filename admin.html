@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - DTM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <script> tailwind.config = {theme: {extend: {colors: {dtm: {light: '#e0f2fe', primary: '#0284c7', dark: '#0c4a6e'}}}}} </script>
+    <style>
+        body {
+            background-image: url('https://images.unsplash.com/photo-1638202993928-7267aad84c31?q=80&w=1920');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
+
+        .glass-overlay {
+            background-color: rgba(255, 255, 255, 0.95);
+            min-height: 100vh;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glass-overlay p-4">
+
+        <div id="adminLogin" class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-xl mt-20 border border-gray-100">
+            <h2 class="text-2xl font-bold text-center mb-6">Accès Administrateur</h2>
+            <input type="password" id="adminPassword" placeholder="Mot de passe (dtm2025)"
+                class="w-full px-4 py-3 mb-4 border rounded-xl">
+            <button onclick="verifyAdmin()"
+                class="w-full bg-dtm-dark text-white py-3 rounded-xl font-bold">Entrer</button>
+            <p class="mt-4 text-center"><a href="index.html" class="text-gray-400 text-sm">Retour</a></p>
+        </div>
+
+        <div id="adminPanel" class="hidden max-w-[90%] mx-auto fade-in mt-10">
+            <div class="flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow-sm">
+                <h2 class="text-2xl font-bold text-dtm-dark">Administration</h2>
+                <div class="flex gap-3">
+                    <button onclick="exportXLSX()"
+                        class="bg-green-600 text-white px-5 py-2 rounded-lg font-bold shadow hover:bg-green-700 flex items-center">
+                        <i class="fa-solid fa-file-excel mr-2"></i> Exporter .xlsx
+                    </button>
+                    <button onclick="window.location.href='index.html'"
+                        class="bg-red-500 text-white px-5 py-2 rounded-lg font-bold shadow hover:bg-red-600">
+                        <i class="fa-solid fa-sign-out-alt mr-2"></i> Quitter
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+                    <div class="p-4 border-b bg-gray-50 font-bold flex justify-between">
+                        <span>Liste des Membres</span>
+                        <span class="bg-dtm-primary text-white text-xs px-2 py-1 rounded" id="count">0</span>
+                    </div>
+                    <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+                        <table class="w-full text-sm text-left text-gray-500">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0">
+                                <tr>
+                                    <th class="px-4 py-3">Photo</th>
+                                    <th class="px-4 py-3">Infos</th>
+                                    <th class="px-4 py-3">Contacts</th>
+                                    <th class="px-4 py-3">Cursus</th>
+                                    <th class="px-4 py-3">Poste</th>
+                                    <th class="px-4 py-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-1 bg-white rounded-2xl shadow-lg border border-gray-200 p-6 h-fit">
+                    <h3 class="font-bold text-lg mb-4 border-b pb-2"><i class="fa-solid fa-pen-nib mr-2"></i>Publier une
+                        Actualité</h3>
+                    <form onsubmit="postNews(event)" class="space-y-4">
+                        <input type="text" id="newsTitle" placeholder="Titre" required
+                            class="w-full border rounded p-2">
+                        <div>
+                            <label class="text-xs font-bold text-gray-500">Image (depuis appareil)</label>
+                            <input type="file" id="newsImage" accept="image/*" required class="w-full text-sm">
+                        </div>
+                        <select id="newsTag" class="w-full border rounded p-2">
+                            <option>Social</option>
+                            <option>Formation</option>
+                            <option>Culturel</option>
+                            <option>Info</option>
+                        </select>
+                        <textarea id="newsDesc" rows="4" placeholder="Description..." required
+                            class="w-full border rounded p-2"></textarea>
+                        <button type="submit"
+                            class="w-full bg-dtm-dark text-white font-bold py-3 rounded-xl hover:bg-dtm-primary">Publier</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function verifyAdmin() {
+            if (document.getElementById('adminPassword').value === 'dtm2025') {
+                document.getElementById('adminLogin').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                loadMembers();
+            } else {alert("Mot de passe incorrect");}
+        }
+
+        function loadMembers() {
+            const users = JSON.parse(localStorage.getItem('dtm_users')) || [];
+            document.getElementById('count').innerText = users.length;
+            const tbody = document.getElementById('tbody');
+            tbody.innerHTML = '';
+            users.forEach((u, i) => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 border-b">
+                        <td class="px-4 py-3"><img src="${u.photo}" class="w-10 h-10 rounded-full object-cover"></td>
+                        <td class="px-4 py-3">
+                            <div class="font-bold text-black">${u.prenom} ${u.nom}</div>
+                            <div class="text-xs">${u.id}</div>
+                        </td>
+                        <td class="px-4 py-3 text-xs">
+                            <div>${u.telephone}</div>
+                            <div class="truncate max-w-[120px]" title="${u.email}">${u.email}</div>
+                        </td>
+                        <td class="px-4 py-3">${u.specialite} (${u.niveau})</td>
+                        <td class="px-4 py-3 text-dtm-primary font-medium">${u.poste}</td>
+                        <td class="px-4 py-3 text-center"><button onclick="delUser(${i})" class="text-red-500 hover:bg-red-100 p-2 rounded"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function delUser(i) {
+            if (confirm('Supprimer ce membre ?')) {
+                let users = JSON.parse(localStorage.getItem('dtm_users'));
+                users.splice(i, 1);
+                localStorage.setItem('dtm_users', JSON.stringify(users));
+                loadMembers();
+            }
+        }
+
+        function exportXLSX() {
+            const users = JSON.parse(localStorage.getItem('dtm_users')) || [];
+            if (users.length === 0) {alert("Aucune donnée."); return;}
+
+            // Préparation propre pour Excel (retrait de la photo Base64 trop lourde)
+            const cleanData = users.map(u => ({
+                ID: u.id, Prénom: u.prenom, Nom: u.nom, Email: u.email,
+                Téléphone: u.telephone, Spécialité: u.specialite, Niveau: u.niveau,
+                Poste: u.poste, Date: u.date || ''
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(cleanData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Membres DTM");
+            XLSX.writeFile(workbook, "Liste_Membres_DTM.xlsx");
+        }
+
+        function postNews(e) {
+            e.preventDefault();
+            const file = document.getElementById('newsImage').files[0];
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function (evt) {
+                const item = {
+                    id: Date.now(), title: document.getElementById('newsTitle').value,
+                    image: evt.target.result, tag: document.getElementById('newsTag').value,
+                    desc: document.getElementById('newsDesc').value, date: new Date().toLocaleDateString()
+                };
+                let news = JSON.parse(localStorage.getItem('dtm_news')) || [];
+                news.unshift(item);
+                localStorage.setItem('dtm_news', JSON.stringify(news));
+                alert("Publié !"); e.target.reset();
+            };
+        }
+    </script>
+</body>
+
+</html>

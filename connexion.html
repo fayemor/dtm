@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - DTM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {theme: {extend: {colors: {dtm: {light: '#e0f2fe', primary: '#0284c7', dark: '#0c4a6e'}}}}}
+    </script>
+    <style>
+        body {
+            background-image: url('https://images.unsplash.com/photo-1638202993928-7267aad84c31?q=80&w=1920');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
+
+        .glass-overlay {
+            background-color: rgba(255, 255, 255, 0.92);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="glass-overlay p-4">
+        <div
+            class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 border border-gray-100 fade-in text-center relative">
+            <a href="index.html" class="absolute top-6 left-6 text-gray-400 hover:text-dtm-primary"><i
+                    class="fa-solid fa-arrow-left text-xl"></i></a>
+
+            <img src="logo.png" class="h-24 mx-auto mb-4"
+                onerror="this.src='https://cdn-icons-png.flaticon.com/512/1034/1034179.png'">
+            <h2 class="text-2xl font-bold text-dtm-dark mb-1">Bon retour !</h2>
+            <p class="text-gray-500 text-sm mb-6">Connectez-vous à votre espace membre</p>
+
+            <form onsubmit="handleLogin(event)" class="space-y-5 text-left">
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase ml-1">Email</label>
+                    <input type="email" id="loginEmail" required
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-dtm-primary focus:ring-2 focus:ring-dtm-light outline-none">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase ml-1">Mot de passe</label>
+                    <input type="password" id="loginPassword" required
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-dtm-primary focus:ring-2 focus:ring-dtm-light outline-none">
+                </div>
+                <button type="submit"
+                    class="w-full bg-dtm-primary hover:bg-blue-600 text-white font-bold py-3.5 rounded-xl shadow-lg transition-transform hover:scale-[1.02]">Se
+                    connecter</button>
+            </form>
+
+            <p class="mt-6 text-sm text-gray-600">Pas encore membre ? <a href="inscription.html"
+                    class="text-dtm-primary font-bold hover:underline">Créer un compte</a></p>
+        </div>
+    </div>
+
+    <script>
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPassword').value;
+            const users = JSON.parse(localStorage.getItem('dtm_users')) || [];
+            const user = users.find(u => u.email === email && u.password === pass);
+
+            if (user) {
+                localStorage.setItem('dtm_currentUser', JSON.stringify(user));
+                window.location.href = "dashboard.html";
+            } else {
+                alert("Identifiants incorrects. Veuillez réessayer.");
+            }
+        }
+    </script>
+</body>
+
+</html>
