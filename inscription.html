@@ -165,8 +165,28 @@
         </div>
     </div>
 
-    <script>
-        function previewImage(input) {
+    <script type="module">
+        // Importation des outils Firebase (Ne touche pas aux liens)
+        import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import {getFirestore, collection, addDoc, getDocs, query, where} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgO32iFQHG5LZPNRlPUbTmVef3bqs_5xk",
+            authDomain: "dtm-ugb.firebaseapp.com",
+            projectId: "dtm-ugb",
+            storageBucket: "dtm-ugb.firebasestorage.app",
+            messagingSenderId: "346661138136",
+            appId: "1:346661138136:web:cf8e8196a65bda13e631ad",
+            measurementId: "G-7ZVQ65D3RK"
+        };
+
+        // Initialisation
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Fonction de prévisualisation photo (reste la même)
+        window.previewImage = function (input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
@@ -178,35 +198,62 @@
             }
         }
 
-        function handleRegister(e) {
+        // Gestion de l'inscription
+        window.handleRegister = async function (e) {
             e.preventDefault();
-            const photoInput = document.getElementById('userPhoto');
-            if (photoInput.files.length === 0) {alert("Photo obligatoire !"); return;}
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.textContent = "Traitement en cours...";
+            submitBtn.disabled = true;
 
+            const photoInput = document.getElementById('userPhoto');
+            if (photoInput.files.length === 0) {alert("Photo obligatoire !"); submitBtn.disabled = false; return;}
+
+            // Conversion Photo Base64
             const reader = new FileReader();
             reader.readAsDataURL(photoInput.files[0]);
-            reader.onload = function () {
-                let users = JSON.parse(localStorage.getItem('dtm_users')) || [];
-                const email = document.getElementById('email').value;
-                if (users.some(u => u.email === email)) {alert("Cet email est déjà inscrit."); return;}
 
-                const newUser = {
-                    id: 'DTM-' + (users.length + 101),
-                    prenom: document.getElementById('prenom').value,
-                    nom: document.getElementById('nom').value,
-                    email: email,
-                    telephone: document.getElementById('telephone').value,
-                    specialite: document.getElementById('specialite').value,
-                    niveau: document.getElementById('niveau').value,
-                    poste: document.getElementById('poste').value,
-                    password: document.getElementById('password').value,
-                    photo: reader.result,
-                    date: new Date().toLocaleDateString()
-                };
-                users.push(newUser);
-                localStorage.setItem('dtm_users', JSON.stringify(users));
-                alert("Compte créé avec succès !");
-                window.location.href = "connexion.html";
+            reader.onload = async function () {
+                try {
+                    const email = document.getElementById('email').value;
+
+                    // Vérifier si l'email existe déjà dans Firebase
+                    const q = query(collection(db, "membres"), where("email", "==", email));
+                    const querySnapshot = await getDocs(q);
+
+                    if (!querySnapshot.empty) {
+                        alert("Cet email est déjà inscrit !");
+                        submitBtn.textContent = "Valider";
+                        submitBtn.disabled = false;
+                        return;
+                    }
+
+                    // Création de l'objet utilisateur
+                    const newUser = {
+                        id: 'DTM-' + Math.floor(1000 + Math.random() * 9000), // ID aléatoire
+                        prenom: document.getElementById('prenom').value,
+                        nom: document.getElementById('nom').value,
+                        email: email,
+                        telephone: document.getElementById('telephone').value,
+                        specialite: document.getElementById('specialite').value,
+                        niveau: document.getElementById('niveau').value,
+                        poste: document.getElementById('poste').value,
+                        password: document.getElementById('password').value, // Note: En prod, ne jamais stocker mdp en clair
+                        photo: reader.result, // Photo en format texte long
+                        date: new Date().toLocaleDateString()
+                    };
+
+                    // ENVOI VERS FIREBASE (Le Cloud)
+                    await addDoc(collection(db, "membres"), newUser);
+
+                    alert("Inscription réussie ! Les données sont dans le Cloud.");
+                    window.location.href = "connexion.html";
+
+                } catch (error) {
+                    console.error("Erreur: ", error);
+                    alert("Erreur lors de l'inscription : " + error.message);
+                    submitBtn.textContent = "Valider";
+                    submitBtn.disabled = false;
+                }
             };
         }
     </script>
