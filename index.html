@@ -5,10 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accueil - DTM UGB</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <script>
-        tailwind.config = {theme: {extend: {colors: {dtm: {light: '#e0f2fe', primary: '#0284c7', dark: '#0c4a6e'}}}}}
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {dtm: {light: '#e0f2fe', primary: '#0284c7', dark: '#0c4a6e'}},
+                    fontFamily: {sans: ['Montserrat', 'sans-serif']}
+                }
+            }
+        }
     </script>
     <style>
         body {
@@ -39,6 +50,21 @@
 </head>
 
 <body>
+
+    <div id="notificationWrapper"
+        class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[100] pointer-events-none select-none">
+        <div id="warningPopup"
+            class="bg-orange-500/95 backdrop-blur-md text-white pl-4 pr-8 py-3 rounded-full shadow-2xl flex items-center space-x-4 transition-all duration-500 ease-out transform -translate-y-[250%] opacity-0 border border-orange-400/50">
+            <div class="bg-white/20 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-lock text-xl font-bold"></i>
+            </div>
+            <div>
+                <h4 class="font-bold text-base leading-none mb-1">Accès restreint</h4>
+                <p id="warningText" class="text-sm text-orange-50 leading-none">Veuillez vous connecter d'abord.</p>
+            </div>
+        </div>
+    </div>
+
     <div class="glass-overlay">
         <nav class="fixed w-full z-50 top-0 start-0 bg-white/95 backdrop-blur-md border-b shadow-sm transition-all">
             <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-2">
@@ -48,19 +74,20 @@
                     <span class="self-center text-2xl font-bold text-dtm-dark hidden sm:block">DTM UGB</span>
                 </a>
 
-                <div class="flex md:order-2 space-x-3">
+                <div class="flex md:order-2 space-x-3 items-center">
                     <a href="admin.html"
-                        class="text-white bg-dtm-dark hover:bg-dtm-primary font-medium rounded-full text-sm px-6 py-2.5 transition-all shadow-lg hover:shadow-xl flex items-center">
-                        <i class="fa-solid fa-user-shield mr-2"></i>Admin
+                        class="text-gray-500 hover:text-dtm-dark font-medium text-sm px-3 py-2 transition-colors hidden md:block">
+                        <i class="fa-solid fa-user-shield mr-1"></i> Admin
                     </a>
+
                     <button onclick="document.getElementById('navbar').classList.toggle('hidden')"
-                        class="md:hidden p-2 text-gray-500 rounded-lg hover:bg-gray-100">
+                        class="md:hidden p-2 text-gray-500 rounded-lg hover:bg-gray-100 focus:ring-2 focus:ring-gray-200">
                         <i class="fa-solid fa-bars text-xl"></i>
                     </button>
                 </div>
 
                 <div class="hidden w-full md:flex md:w-auto md:order-1" id="navbar">
-                    <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium md:flex-row md:space-x-8 md:mt-0">
+                    <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium md:flex-row md:space-x-8 md:mt-0 items-center">
                         <li><a href="index.html"
                                 class="block py-2 px-3 text-dtm-primary font-bold border-b-2 border-dtm-primary">Accueil</a>
                         </li>
@@ -69,6 +96,13 @@
                                 Propos</a></li>
                         <li><a href="actualites.html"
                                 class="block py-2 px-3 text-gray-700 hover:text-dtm-primary transition-colors">Actualités</a>
+                        </li>
+
+                        <li>
+                            <button onclick="checkAccess()"
+                                class="block py-2 px-4 ml-2 text-white bg-dtm-primary hover:bg-dtm-dark rounded-full transition-all shadow-md transform hover:scale-105">
+                                <i class="fa-solid fa-user-circle mr-2"></i>Mon Profil
+                            </button>
                         </li>
                     </ul>
                 </div>
@@ -89,7 +123,7 @@
                 <div class="flex flex-col sm:flex-row justify-center gap-6">
                     <a href="inscription.html"
                         class="px-10 py-4 bg-dtm-primary hover:bg-blue-600 text-white text-lg font-bold rounded-full shadow-xl transition-transform hover:scale-105">
-                        <i class="fa-solid fa-user-plus mr-2"></i> Créer un compte
+                        <i class="fa-solid fa-user-plus mr-2"></i> Devenir Membre
                     </a>
                     <a href="connexion.html"
                         class="px-10 py-4 bg-white hover:bg-gray-50 text-dtm-dark text-lg font-bold rounded-full shadow-xl border border-gray-200 transition-transform hover:scale-105">
@@ -99,6 +133,37 @@
             </div>
         </section>
     </div>
+
+    <script>
+        // FONCTION INTELLIGENTE : MON PROFIL
+        function checkAccess() {
+            // Vérifie si l'utilisateur est connecté (clé stockée dans le navigateur)
+            const user = localStorage.getItem('dtm_currentUser');
+
+            if (user) {
+                // OUI -> Redirection vers Espace Membre
+                window.location.href = "dashboard.html";
+            } else {
+                // NON -> Affiche Notification + Redirection vers Connexion
+                showWarning("Veuillez vous connecter pour accéder à votre espace.");
+                setTimeout(() => {
+                    window.location.href = "connexion.html";
+                }, 2000);
+            }
+        }
+
+        // Animation Notification
+        function showWarning(message) {
+            const popup = document.getElementById('warningPopup');
+            document.getElementById('warningText').innerText = message;
+            popup.classList.remove('-translate-y-[250%]', 'opacity-0');
+            popup.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                popup.classList.remove('translate-y-0', 'opacity-100');
+                popup.classList.add('-translate-y-[250%]', 'opacity-0');
+            }, 3000);
+        }
+    </script>
 </body>
 
 </html>
