@@ -5,29 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Actualités - DTM</title>
-
-    <meta property="og:title" content="Actualités - DTM UGB">
-    <meta property="og:description"
-        content="Découvrez les dernières informations et activités du Dahira Touba Médecine UGB.">
-    <meta property="og:image" content="logo.png">
-    <meta property="og:type" content="website">
-
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <script>
-        tailwind.config = {
-            theme: {extend: {colors: {dtm: {light: '#e0f2fe', primary: '#0284c7', dark: '#0c4a6e'}}}}
-        } 
-    </script>
-
+    <script> tailwind.config = {theme: {extend: {colors: {dtm: {light: '#e0f2fe', primary: '#0284c7', dark: '#0c4a6e'}}}}} </script>
     <style>
+        /* NOUVEAU FOND BLEU (Dégradé DTM) */
         body {
             background: linear-gradient(135deg, #0284c7 0%, #0c4a6e 100%);
             background-attachment: fixed;
             min-height: 100vh;
         }
 
+        /* L'effet de verre est légèrement ajusté pour bien ressortir sur le bleu */
         .glass-overlay {
             background-color: rgba(255, 255, 255, 0.92);
             min-height: 100vh;
@@ -37,20 +26,12 @@
             animation: fadeIn 0.8s ease-out forwards;
         }
 
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Animation pour l'article ciblé par un lien partagé */
+        /* Animation pour l'article partagé */
         @keyframes highlightPulse {
             0% {
                 box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.7);
                 border-color: #0284c7;
                 transform: scale(1.02);
-                z-index: 10;
             }
 
             70% {
@@ -62,33 +43,40 @@
             100% {
                 box-shadow: 0 0 0 0 rgba(2, 132, 199, 0);
                 transform: scale(1);
-                z-index: 1;
             }
         }
 
         .highlight-news {
             animation: highlightPulse 2s ease-out;
             border: 2px solid #0284c7 !important;
-            scroll-margin-top: 120px;
         }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+    <style>
+        body {
+            /* Le nouveau fond bleu */
+            background: linear-gradient(135deg, #0284c7 0%, #0c4a6e 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        .glass-overlay {
+            background-color: rgba(255, 255, 255, 0.92);
+            /* Garde le contenu lisible */
+            min-height: 100vh;
+        }
+
+        /* ... le reste de vos animations ... */
     </style>
 </head>
 
 <body>
-
-    <div id="notificationWrapper"
-        class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[100] pointer-events-none select-none">
-        <div id="sharePopup"
-            class="bg-green-600/95 backdrop-blur-md text-white pl-4 pr-8 py-3 rounded-full shadow-2xl flex items-center space-x-4 transition-all duration-500 ease-out transform -translate-y-[250%] opacity-0 border border-green-500/50">
-            <div class="bg-white/20 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0"><i
-                    class="fa-solid fa-link text-xl font-bold"></i></div>
-            <div>
-                <h4 class="font-bold text-base leading-none mb-1">Lien copié !</h4>
-                <p class="text-sm text-green-100 leading-none">Prêt à être collé.</p>
-            </div>
-        </div>
-    </div>
-
     <div class="glass-overlay">
         <nav class="fixed w-full z-50 top-0 start-0 bg-white/95 backdrop-blur-md border-b shadow-sm">
             <div class="max-w-screen-xl flex items-center justify-between mx-auto px-4 py-2">
@@ -115,6 +103,7 @@
 
     <div id="readModal" class="fixed inset-0 z-[60] hidden" role="dialog" aria-modal="true">
         <div class="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity" onclick="closeReadModal()"></div>
+
         <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
             <div
                 class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col pointer-events-auto transform transition-all scale-100">
@@ -126,14 +115,17 @@
                         <i class="fa-solid fa-xmark text-xl"></i>
                     </button>
                     <span id="modalCat"
-                        class="absolute bottom-4 left-4 bg-dtm-primary text-white text-xs font-bold px-3 py-1 rounded-full shadow">Info</span>
+                        class="absolute bottom-4 left-4 bg-dtm-primary text-white text-xs font-bold px-3 py-1 rounded-full shadow">Catégorie</span>
                 </div>
 
                 <div class="p-8 overflow-y-auto custom-scrollbar">
                     <div class="flex items-center text-sm text-gray-500 mb-4">
                         <i class="fa-regular fa-calendar mr-2"></i> <span id="modalDate">Date</span>
                     </div>
-                    <h2 id="modalTitle" class="text-2xl font-bold text-gray-900 mb-6 leading-tight">Titre</h2>
+
+                    <h2 id="modalTitle" class="text-2xl font-bold text-gray-900 mb-6 leading-tight">Titre de l'article
+                    </h2>
+
                     <div id="modalDesc"
                         class="text-gray-700 leading-relaxed space-y-4 text-justify text-lg whitespace-pre-wrap"></div>
                 </div>
@@ -150,7 +142,7 @@
         import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import {getFirestore, collection, getDocs, query} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // --- 2. CONFIGURATION (Celle que vous avez fournie) ---
+        // CONFIG FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyC9O7wvG2s-teRO5IehT5K1ozJ48S2nDDo",
             authDomain: "dtm-ugb-officiel.firebaseapp.com",
@@ -164,25 +156,15 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Variable globale pour stocker les articles (pour la modale)
         let allNewsData = [];
 
-        // Fonctions globales
+        // Rendre les fonctions accessibles au HTML
         window.openReadModal = openReadModal;
         window.closeReadModal = closeReadModal;
-        window.shareNews = shareNews; // Nouvelle fonction de partage
 
-        // --- 3. NOTIFICATION ---
-        function showShareNotification() {
-            const popup = document.getElementById('sharePopup');
-            popup.classList.remove('-translate-y-[250%]', 'opacity-0');
-            popup.classList.add('translate-y-0', 'opacity-100');
-            setTimeout(() => {popup.classList.remove('translate-y-0', 'opacity-100'); popup.classList.add('-translate-y-[250%]', 'opacity-0');}, 3000);
-        }
-
-        // --- 4. CHARGEMENT DES ACTUS ---
         async function loadNews() {
             const container = document.getElementById('newsContainer');
-            // Récupère l'ID dans le lien si on vient d'un partage (ex: ...html?id=123)
             const urlParams = new URLSearchParams(window.location.search);
             const targetId = urlParams.get('id');
 
@@ -191,43 +173,35 @@
                 const querySnapshot = await getDocs(q);
 
                 if (querySnapshot.empty) {
-                    container.innerHTML = `<div class="col-span-full text-center py-10 text-gray-500 bg-white rounded-xl shadow p-4">Aucune actualité publiée pour le moment.<br>Connectez-vous à l'admin pour en ajouter.</div>`;
+                    container.innerHTML = `<div class="col-span-full text-center py-10 text-gray-500">Aucune actualité.</div>`;
                     return;
                 }
 
                 container.innerHTML = '';
-                allNewsData = [];
+                allNewsData = []; // Reset
 
                 querySnapshot.forEach((doc) => {
                     const item = doc.data();
                     const docId = doc.id;
                     const imgUrl = item.image || 'https://placehold.co/600x400?text=Image+Manquante';
 
+                    // On sauvegarde les données pour la modale
                     allNewsData.push({id: docId, ...item, image: imgUrl});
 
-                    // Si c'est l'article partagé, on ajoute une classe spéciale
-                    const highlightClass = (docId === targetId) ? 'highlight-news ring-4 ring-blue-100' : '';
+                    // Highlight si partage
+                    const isTarget = (docId === targetId);
+                    const highlightClass = isTarget ? 'highlight-news ring-4 ring-blue-100' : '';
 
                     container.innerHTML += `
                         <div id="${docId}" class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 group flex flex-col h-full ${highlightClass}">
-                            
                             <div class="h-56 overflow-hidden relative bg-gray-100 cursor-pointer" onclick="openReadModal('${docId}')">
                                 <img src="${imgUrl}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy">
                                 <div class="absolute top-3 right-3 bg-dtm-primary text-white text-xs font-bold px-3 py-1 rounded-full shadow border border-white/20">${item.categorie || 'Info'}</div>
                             </div>
-
                             <div class="p-6 flex flex-col flex-grow">
-                                <div class="text-xs text-gray-400 mb-2 flex items-center justify-between">
-                                    <span><i class="fa-regular fa-calendar mr-2"></i> ${item.date || ''}</span>
-                                    
-                                    <button onclick="event.stopPropagation(); shareNews('${docId}', '${item.titre.replace(/'/g, "\\'")}')" class="text-gray-400 hover:text-dtm-primary transition-colors p-2 rounded-full hover:bg-gray-100" title="Partager">
-                                        <i class="fa-solid fa-share-nodes text-lg"></i>
-                                    </button>
-                                </div>
-
+                                <div class="text-xs text-gray-400 mb-2 flex items-center"><i class="fa-regular fa-calendar mr-2"></i> ${item.date || ''}</div>
                                 <h3 class="text-xl font-bold text-gray-800 mb-3 leading-tight group-hover:text-dtm-primary transition-colors cursor-pointer" onclick="openReadModal('${docId}')">${item.titre}</h3>
                                 <p class="text-gray-600 text-sm line-clamp-3 mb-6 flex-grow">${item.description || ''}</p>
-                                
                                 <button onclick="openReadModal('${docId}')" class="text-dtm-primary font-bold text-sm hover:bg-blue-50 p-2 rounded-lg self-start mt-auto transition-colors">
                                     Lire la suite <i class="fa-solid fa-arrow-right ml-1"></i>
                                 </button>
@@ -236,64 +210,39 @@
                     `;
                 });
 
-                // Si un ID est dans l'URL, on scrolle vers l'article
                 if (targetId) {
                     setTimeout(() => {
                         const targetElement = document.getElementById(targetId);
-                        if (targetElement) {
-                            targetElement.scrollIntoView({behavior: 'smooth', block: 'center'});
-                        }
+                        if (targetElement) targetElement.scrollIntoView({behavior: 'smooth', block: 'center'});
                     }, 500);
                 }
 
             } catch (error) {
                 console.error(error);
-                container.innerHTML = `<div class="col-span-full text-center text-red-500 py-10 bg-white rounded-xl shadow">Erreur de chargement. Vérifiez votre connexion.</div>`;
+                container.innerHTML = `<div class="col-span-full text-center text-red-500">Erreur de chargement.</div>`;
             }
         }
 
-        // --- 5. FONCTION PARTAGE ---
-        window.shareNews = async function (id, title) {
-            // Création du lien unique vers l'article
-            const shareUrl = `${window.location.origin}${window.location.pathname}?id=${id}`;
-            const shareData = {
-                title: 'DTM UGB - Actualité',
-                text: title,
-                url: shareUrl
-            };
-
-            // Sur mobile : Ouvre le menu de partage natif (WhatsApp, etc.)
-            if (navigator.share) {
-                try {
-                    await navigator.share(shareData);
-                } catch (err) {
-                    console.log('Partage annulé');
-                }
-            } else {
-                // Sur PC : Copie le lien
-                navigator.clipboard.writeText(shareUrl).then(() => {
-                    showShareNotification();
-                });
-            }
-        }
-
-        // --- 6. MODALE ---
+        // --- GESTION DE LA MODALE ---
         function openReadModal(id) {
+            // Trouver l'article correspondant dans notre variable globale
             const article = allNewsData.find(item => item.id === id);
+
             if (article) {
                 document.getElementById('modalImg').src = article.image;
                 document.getElementById('modalCat').innerText = article.categorie || 'Info';
                 document.getElementById('modalDate').innerText = article.date || '';
                 document.getElementById('modalTitle').innerText = article.titre;
-                document.getElementById('modalDesc').innerText = article.description;
+                document.getElementById('modalDesc').innerText = article.description; // Respecte les sauts de ligne grâce au CSS whitespace-pre-wrap
+
                 document.getElementById('readModal').classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
+                document.body.style.overflow = 'hidden'; // Bloque le scroll arrière-plan
             }
         }
 
         function closeReadModal() {
             document.getElementById('readModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
+            document.body.style.overflow = 'auto'; // Réactive le scroll
         }
 
         loadNews();
