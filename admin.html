@@ -5,20 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - DTM</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
     <script>
-        tailwind.config = {theme: {extend: {colors: {dtm: {light: '#e0f2fe', primary: '#0284c7', dark: '#0c4a6e'}}}}}
+        tailwind.config = {theme: {extend: {colors: {dtm: {light: '#e0f2fe', primary: '#0284c7', dark: '#0c4a6e'}}, fontFamily: {sans: ['Montserrat', 'sans-serif']}}}}
     </script>
     <style>
         body {
-            background-image: url('https://images.unsplash.com/photo-1638202993928-7267aad84c31?q=80&w=1920');
-            background-size: cover;
+            background: linear-gradient(135deg, #0284c7 0%, #0c4a6e 100%);
             background-attachment: fixed;
-            background-position: center;
+            min-height: 100vh;
         }
 
         .glass-overlay {
@@ -36,129 +36,190 @@
                 transform: translateY(0);
             }
         }
-
-        /* Style pour la scrollbar des actus */
-        .custom-scroll::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .custom-scroll::-webkit-scrollbar-thumb {
-            background-color: #cbd5e1;
-            border-radius: 4px;
-        }
     </style>
 </head>
 
 <body>
-    <div class="glass-overlay p-4">
 
+    <div id="notificationWrapper"
+        class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[100] pointer-events-none select-none flex flex-col gap-3 w-full max-w-sm px-4">
+        <div id="successPopup"
+            class="bg-green-600/95 backdrop-blur-md text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center space-x-4 transition-all duration-500 ease-out transform -translate-y-[250%] opacity-0">
+            <div class="bg-white/20 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0"><i
+                    class="fa-solid fa-check text-xl"></i></div>
+            <div>
+                <h4 class="font-bold text-base leading-tight">Effectué !</h4>
+                <p id="successText" class="text-sm text-green-100">Opération réussie.</p>
+            </div>
+        </div>
+        <div id="warningPopup"
+            class="bg-orange-500/95 backdrop-blur-md text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center space-x-4 transition-all duration-500 ease-out transform -translate-y-[250%] opacity-0 absolute w-full">
+            <div class="bg-white/20 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0"><i
+                    class="fa-solid fa-circle-exclamation text-xl"></i></div>
+            <div>
+                <h4 class="font-bold text-base leading-tight">Attention</h4>
+                <p id="warningText" class="text-sm text-orange-100">Une info est manquante.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmModal"
+        class="fixed inset-0 z-[200] hidden flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity">
+        <div
+            class="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center transform scale-100 transition-transform relative">
+            <button onclick="closeConfirm(false)"
+                class="absolute top-4 right-4 text-gray-300 hover:text-gray-500 transition-colors"><i
+                    class="fa-solid fa-xmark text-xl"></i></button>
+
+            <div
+                class="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4 text-red-500 shadow-sm">
+                <i class="fa-solid fa-trash-can text-2xl"></i>
+            </div>
+
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Êtes-vous sûr ?</h3>
+            <p id="confirmMessage" class="text-gray-500 text-sm mb-8 leading-relaxed">Voulez-vous vraiment supprimer cet
+                élément ? Cette action est irréversible.</p>
+
+            <div class="flex justify-center gap-3">
+                <button onclick="closeConfirm(false)"
+                    class="px-6 py-2.5 rounded-xl border border-gray-200 text-gray-500 font-bold hover:bg-gray-50 transition-colors">Annuler</button>
+                <button id="confirmBtnAction"
+                    class="px-6 py-2.5 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 shadow-lg shadow-red-200 transition-transform hover:scale-105">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="userModal" class="fixed inset-0 z-[150] hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="closeUserModal()"></div>
+        <div
+            class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl bg-white rounded-2xl shadow-2xl h-auto max-h-[90vh] overflow-hidden flex flex-col">
+            <div class="bg-dtm-dark p-6 text-white flex justify-between items-start shrink-0">
+                <div class="flex items-center space-x-4">
+                    <img id="modalUserPhoto" src=""
+                        class="w-16 h-16 rounded-full border-2 border-white object-cover bg-gray-500">
+                    <div>
+                        <h3 id="modalUserName" class="text-2xl font-bold">Prénom Nom</h3>
+                        <p id="modalUserId" class="text-sm opacity-80 font-mono">ID: DTM-000</p>
+                    </div>
+                </div>
+                <button onclick="closeUserModal()" class="text-white/70 hover:text-white"><i
+                        class="fa-solid fa-xmark text-2xl"></i></button>
+            </div>
+            <div class="p-8 overflow-y-auto" id="modalContent"></div>
+            <div class="p-4 bg-gray-50 border-t flex justify-end shrink-0"><button onclick="closeUserModal()"
+                    class="px-6 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold text-gray-700">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-overlay p-4">
         <div id="adminLogin" class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-xl mt-20 border border-gray-100">
-            <h2 class="text-2xl font-bold text-center mb-6">Accès Administrateur</h2>
-            <input type="password" id="adminPassword" placeholder="Saisir le mot de passe"
-                class="w-full px-4 py-3 mb-4 border rounded-xl">
+            <h2 class="text-2xl font-bold text-center mb-6 text-dtm-dark">Espace Admin</h2>
+            <input type="password" id="adminPassword" placeholder="Mot de passe"
+                class="w-full px-4 py-3 mb-4 border rounded-xl focus:ring-2 focus:ring-dtm-primary outline-none">
             <button onclick="verifyAdmin()"
-                class="w-full bg-dtm-dark text-white py-3 rounded-xl font-bold hover:bg-dtm-primary transition-colors">Entrer</button>
-            <p class="mt-4 text-center"><a href="index.html" class="text-gray-400 text-sm">Retour</a></p>
+                class="w-full bg-dtm-dark text-white py-3 rounded-xl font-bold hover:bg-dtm-primary transition-colors shadow-lg">Connexion</button>
+            <p class="mt-4 text-center"><a href="index.html"
+                    class="text-gray-400 text-sm hover:text-dtm-primary">Retour</a></p>
         </div>
 
-        <div id="adminPanel" class="hidden max-w-[98%] mx-auto fade-in mt-6">
+        <div id="adminPanel" class="hidden max-w-[95%] mx-auto fade-in mt-10 pb-20">
             <div
-                class="flex flex-col md:flex-row justify-between items-center mb-6 bg-white p-4 rounded-xl shadow-sm gap-4">
-                <h2 class="text-2xl font-bold text-dtm-dark">Administration</h2>
+                class="flex flex-col md:flex-row justify-between items-center mb-8 bg-white p-4 rounded-xl shadow-sm gap-4 border border-gray-100">
+                <h2 class="text-2xl font-bold text-dtm-dark pl-2">Administration</h2>
                 <div class="flex gap-3">
                     <button onclick="exportXLSX()"
-                        class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold shadow hover:bg-green-700 text-sm flex items-center">
-                        <i class="fa-solid fa-file-excel mr-2"></i> Excel
-                    </button>
+                        class="bg-green-600 text-white px-5 py-2 rounded-lg font-bold shadow hover:bg-green-700 flex items-center transition-colors"><i
+                            class="fa-solid fa-file-excel mr-2"></i> Excel</button>
                     <button onclick="window.location.href='index.html'"
-                        class="bg-red-500 text-white px-4 py-2 rounded-lg font-bold shadow hover:bg-red-600 text-sm">
-                        <i class="fa-solid fa-sign-out-alt mr-2"></i> Quitter
-                    </button>
+                        class="bg-red-500 text-white px-5 py-2 rounded-lg font-bold shadow hover:bg-red-600 transition-colors"><i
+                            class="fa-solid fa-sign-out-alt mr-2"></i> Quitter</button>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-                <div class="lg:col-span-2 space-y-6">
-                    <div
-                        class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden h-[600px] flex flex-col">
-                        <div class="p-4 border-b bg-gray-50 font-bold flex justify-between">
-                            <span>Liste des Membres</span>
-                            <span class="bg-dtm-primary text-white text-xs px-2 py-1 rounded" id="count">0</span>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 space-y-8">
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+                        <div class="p-4 border-b bg-gray-50 font-bold flex justify-between items-center">
+                            <span class="text-gray-700">Membres Inscrits</span>
+                            <span class="bg-dtm-primary text-white text-xs px-3 py-1 rounded-full" id="count">0</span>
                         </div>
-                        <div class="overflow-x-auto overflow-y-auto flex-grow custom-scroll">
+                        <div class="overflow-x-auto max-h-[400px] overflow-y-auto">
                             <table class="w-full text-sm text-left text-gray-500">
-                                <thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0 z-10">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0">
                                     <tr>
                                         <th class="px-4 py-3">Photo</th>
-                                        <th class="px-4 py-3">Infos</th>
-                                        <th class="px-4 py-3">Contacts</th>
-                                        <th class="px-4 py-3">Cursus</th>
+                                        <th class="px-4 py-3">Identité</th>
+                                        <th class="px-4 py-3">Contact</th>
                                         <th class="px-4 py-3">Poste</th>
+                                        <th class="px-4 py-3 text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody" class="divide-y divide-gray-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+                        <div class="p-4 border-b bg-gray-50 font-bold flex justify-between items-center">
+                            <span class="text-gray-700">Actualités</span>
+                            <button onclick="loadNewsAdmin()"
+                                class="text-xs text-dtm-primary font-bold hover:underline"><i
+                                    class="fa-solid fa-rotate mr-1"></i>Actualiser</button>
+                        </div>
+                        <div class="overflow-x-auto max-h-[400px] overflow-y-auto">
+                            <table class="w-full text-sm text-left text-gray-500">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0">
+                                    <tr>
+                                        <th class="px-4 py-3">Image</th>
+                                        <th class="px-4 py-3">Titre</th>
+                                        <th class="px-4 py-3">Date</th>
                                         <th class="px-4 py-3 text-center">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tbody"></tbody>
+                                <tbody id="newsTbody" class="divide-y divide-gray-100"></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <div class="lg:col-span-1 space-y-6">
-
-                    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-5">
-                        <h3 class="font-bold text-lg mb-4 border-b pb-2 flex justify-between items-center">
-                            <span><i class="fa-solid fa-pen-nib mr-2 text-dtm-primary"></i>Éditeur</span>
-                            <button id="cancelEditBtn" onclick="resetNewsForm()"
-                                class="hidden text-xs text-red-500 hover:underline">Annuler modif</button>
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 h-fit sticky top-4">
+                        <h3
+                            class="font-bold text-lg mb-6 border-b pb-2 flex justify-between items-center text-dtm-dark">
+                            <span id="formTitle"><i class="fa-solid fa-pen-nib mr-2"></i>Publier une Actualité</span>
+                            <button onclick="resetForm()" id="cancelEditBtn"
+                                class="hidden text-xs text-red-500 hover:bg-red-50 px-2 py-1 rounded transition-colors">Annuler</button>
                         </h3>
-
-                        <form onsubmit="handleNewsSubmit(event)" class="space-y-3">
-                            <input type="hidden" id="editNewsId"> <input type="hidden" id="existingImageUrl">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">Titre</label>
-                                <input type="text" id="newsTitle" placeholder="Titre..." required
-                                    class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-dtm-primary outline-none">
+                        <form onsubmit="handleNewsSubmit(event)" class="space-y-4">
+                            <input type="hidden" id="editId"><input type="hidden" id="editImageUrl">
+                            <div><label class="block text-xs font-bold text-gray-500 mb-1 uppercase">Titre</label><input
+                                    type="text" id="newsTitle" placeholder="Titre..." required
+                                    class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-dtm-primary outline-none">
                             </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">Image <span
-                                        class="font-normal text-gray-400">(Laisser vide si pas de
-                                        changement)</span></label>
-                                <input type="file" id="newsImage" accept="image/*"
-                                    class="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:bg-dtm-light file:text-dtm-dark cursor-pointer">
+                            <div><label class="block text-xs font-bold text-gray-500 mb-1 uppercase">Image</label><input
+                                    type="file" id="newsImage" accept="image/*"
+                                    class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-dtm-light file:text-dtm-dark hover:file:bg-blue-100 cursor-pointer border border-gray-300 rounded-lg">
+                                <p id="imageStatus" class="text-[10px] text-gray-400 mt-1 italic hidden">Image actuelle
+                                    conservée.</p>
                             </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">Catégorie</label>
-                                <select id="newsTag" class="w-full border rounded p-2 text-sm bg-white">
+                            <div><label
+                                    class="block text-xs font-bold text-gray-500 mb-1 uppercase">Catégorie</label><select
+                                    id="newsTag"
+                                    class="w-full border border-gray-300 rounded-lg p-2 bg-white focus:ring-2 focus:ring-dtm-primary outline-none">
                                     <option value="Social">Social</option>
                                     <option value="Formation">Formation</option>
                                     <option value="Culturel">Culturel</option>
                                     <option value="Info">Info</option>
-                                </select>
+                                </select></div>
+                            <div><label
+                                    class="block text-xs font-bold text-gray-500 mb-1 uppercase">Description</label><textarea
+                                    id="newsDesc" rows="5" placeholder="Détails..." required
+                                    class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-dtm-primary outline-none resize-none"></textarea>
                             </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 mb-1">Description</label>
-                                <textarea id="newsDesc" rows="3" placeholder="Texte..." required
-                                    class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-dtm-primary outline-none"></textarea>
-                            </div>
-
-                            <button type="submit" id="submitNewsBtn"
-                                class="w-full bg-dtm-dark hover:bg-dtm-primary text-white font-bold py-2.5 rounded-xl transition-all shadow-md text-sm">
-                                Publier
-                            </button>
+                            <button type="submit" id="submitBtn"
+                                class="w-full bg-dtm-dark hover:bg-dtm-primary text-white font-bold py-3 rounded-xl transition-all shadow-md mt-2">Publier</button>
                         </form>
                     </div>
-
-                    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-5 h-[400px] flex flex-col">
-                        <h3 class="font-bold text-lg mb-2 border-b pb-2 text-gray-700">Publications (<span
-                                id="newsCount">0</span>)</h3>
-                        <div id="adminNewsList" class="overflow-y-auto flex-grow custom-scroll space-y-3 pr-1">
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </div>
@@ -166,245 +227,144 @@
 
     <script type="module">
         import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import {getFirestore, collection, getDocs, doc, deleteDoc, addDoc, updateDoc, orderBy, query} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import {getFirestore, collection, getDocs, doc, deleteDoc, addDoc, updateDoc} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // ---------------------------------------------------------
-        // 🔴 COLLE TES CLES ICI
-        // ---------------------------------------------------------
         const firebaseConfig = {
-            apiKey: "AIzaSyAgO32iFQHG5LZPNRlPUbTmVef3bqs_5xk", // REMETS TES CLES
-            authDomain: "dtm-ugb.firebaseapp.com",
-            projectId: "dtm-ugb",
-            storageBucket: "dtm-ugb.firebasestorage.app",
-            messagingSenderId: "346661138136",
-            appId: "1:346661138136:web:cf8e8196a65bda13e631ad",
-            measurementId: "G-7ZVQ65D3RK"
+            apiKey: "AIzaSyC9O7wvG2s-teRO5IehT5K1ozJ48S2nDDo",
+            authDomain: "dtm-ugb-officiel.firebaseapp.com",
+            projectId: "dtm-ugb-officiel",
+            storageBucket: "dtm-ugb-officiel.firebasestorage.app",
+            messagingSenderId: "871436265978",
+            appId: "1:871436265978:web:98bf9fb593bd6e46e3dc43",
+            measurementId: "G-1P30LZJHYJ"
         };
-
-        const IMGBB_API_KEY = "e53ca413a62a27eebd194ebd7285e15a"; // Ta clé ImgBB
-
-        // Initialisation
+        const IMGBB_API_KEY = "bcb309af5ba5fd83f606e684bd298174";
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        let allUsersData = [];
+        let confirmResolver = null; // Pour gérer la promesse de confirmation
 
-        // Globales
-        window.verifyAdmin = verifyAdmin;
-        window.delUser = delUser;
-        window.exportXLSX = exportXLSX;
-        window.handleNewsSubmit = handleNewsSubmit;
-        window.deleteNews = deleteNews;
-        window.editNews = editNews;
-        window.resetNewsForm = resetNewsForm;
-        window.shareNews = shareNews;
+        window.verifyAdmin = verifyAdmin; window.delUser = delUser; window.viewUser = viewUser; window.closeUserModal = closeUserModal; window.exportXLSX = exportXLSX; window.handleNewsSubmit = handleNewsSubmit; window.deleteNews = deleteNews; window.startEditNews = startEditNews; window.copyShareLink = copyShareLink; window.resetForm = resetForm; window.loadNewsAdmin = loadNewsAdmin; window.showNotification = showNotification; window.closeConfirm = closeConfirm;
 
-        // --- 1. CONNEXION ---
+        // --- GESTION NOTIFICATIONS ---
+        function showNotification(type, message) {
+            const popup = document.getElementById(type === 'success' ? 'successPopup' : 'warningPopup');
+            const text = document.getElementById(type === 'success' ? 'successText' : 'warningText');
+            text.innerText = message;
+            popup.classList.remove('-translate-y-[250%]', 'opacity-0');
+            popup.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {popup.classList.remove('translate-y-0', 'opacity-100'); popup.classList.add('-translate-y-[250%]', 'opacity-0');}, 3000);
+        }
+
+        // --- GESTION CONFIRMATION PERSONNALISÉE ---
+        function showConfirmModal(message, confirmText = "Supprimer") {
+            const modal = document.getElementById('confirmModal');
+            const msgEl = document.getElementById('confirmMessage');
+            const btnEl = document.getElementById('confirmBtnAction');
+
+            msgEl.innerText = message;
+            btnEl.innerText = confirmText;
+            modal.classList.remove('hidden');
+
+            return new Promise((resolve) => {
+                confirmResolver = resolve;
+            });
+        }
+
+        function closeConfirm(result) {
+            document.getElementById('confirmModal').classList.add('hidden');
+            if (confirmResolver) confirmResolver(result);
+        }
+
+        // Attacher le "Oui" au bouton d'action
+        document.getElementById('confirmBtnAction').onclick = () => closeConfirm(true);
+
+        // --- ADMIN LOGIC ---
         function verifyAdmin() {
-            const pass = document.getElementById('adminPassword').value;
-            if (pass === 'admin-dtm-2025') {
+            if (document.getElementById('adminPassword').value === 'admin-dtm-2025') {
                 document.getElementById('adminLogin').classList.add('hidden');
                 document.getElementById('adminPanel').classList.remove('hidden');
-                loadMembers();
-                loadAdminNews();
-            } else {alert("Mot de passe incorrect !");}
+                loadMembers(); loadNewsAdmin();
+            } else {showNotification('warning', "Mot de passe incorrect !");}
         }
 
-        // --- 2. MEMBRES ---
         async function loadMembers() {
             const tbody = document.getElementById('tbody');
-            const snapshot = await getDocs(collection(db, "membres"));
-            document.getElementById('count').innerText = snapshot.size;
-            tbody.innerHTML = '';
-            snapshot.forEach((doc) => {
-                const u = doc.data();
-                tbody.innerHTML += `
-                <tr class="hover:bg-gray-50 border-b">
-                    <td class="px-4 py-3"><img src="${u.photo}" class="w-8 h-8 rounded-full object-cover"></td>
-                    <td class="px-4 py-3"><div class="font-bold text-xs">${u.prenom} ${u.nom}</div><div class="text-[10px] text-gray-500">${u.id}</div></td>
-                    <td class="px-4 py-3 text-xs"><div>${u.telephone}</div><div class="truncate max-w-[100px]">${u.email}</div></td>
-                    <td class="px-4 py-3 text-xs">${u.specialite} (${u.niveau})</td>
-                    <td class="px-4 py-3 text-xs text-dtm-primary font-medium">${u.poste}</td>
-                    <td class="px-4 py-3 text-center"><button onclick="delUser('${doc.id}')" class="text-red-500 hover:bg-red-100 p-1.5 rounded"><i class="fa-solid fa-trash"></i></button></td>
-                </tr>`;
-            });
-        }
-
-        async function delUser(id) {if (confirm('Supprimer ?')) {await deleteDoc(doc(db, "membres", id)); loadMembers();} }
-
-        // --- 3. EXCEL ---
-        async function exportXLSX() {
-            if (typeof XLSX === 'undefined') return alert("Erreur librairie");
-            const snapshot = await getDocs(collection(db, "membres"));
-            let data = [];
-            snapshot.forEach((doc) => {
-                const u = doc.data();
-                data.push({ID: u.id, Prénom: u.prenom, Nom: u.nom, Email: u.email, Tel: u.telephone, Spécialité: u.specialite, Niveau: u.niveau, Poste: u.poste});
-            });
-            const ws = XLSX.utils.json_to_sheet(data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Membres");
-            XLSX.writeFile(wb, "Membres_DTM.xlsx");
-        }
-
-        // --- 4. GESTION ACTUALITÉS (CRUD) ---
-
-        // A. CHARGER LA LISTE
-        async function loadAdminNews() {
-            const list = document.getElementById('adminNewsList');
-            // On essaie de trier par date si possible, sinon affichage standard
-            const snapshot = await getDocs(collection(db, "actualites"));
-            document.getElementById('newsCount').innerText = snapshot.size;
-            list.innerHTML = '';
-
-            snapshot.forEach((doc) => {
-                const item = doc.data();
-                list.innerHTML += `
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 flex gap-3 items-start hover:shadow-md transition-shadow">
-                        <img src="${item.image}" class="w-16 h-16 object-cover rounded bg-gray-200 flex-shrink-0">
-                        <div class="flex-grow min-w-0">
-                            <h4 class="font-bold text-sm text-gray-800 truncate">${item.titre}</h4>
-                            <p class="text-[10px] text-gray-500 mb-1">${item.date} - <span class="text-dtm-primary">${item.categorie}</span></p>
-                            <p class="text-xs text-gray-600 line-clamp-2">${item.description}</p>
-                            
-                            <div class="flex gap-3 mt-2 text-xs">
-                                <button onclick="editNews('${doc.id}', '${item.titre.replace(/'/g, "\\'")}', '${item.categorie}', '${item.description.replace(/'/g, "\\'").replace(/\n/g, " ")}', '${item.image}')" class="text-blue-600 font-bold hover:underline">
-                                    <i class="fa-solid fa-pen mr-1"></i>Modifier
-                                </button>
-                                <button onclick="deleteNews('${doc.id}')" class="text-red-500 font-bold hover:underline">
-                                    <i class="fa-solid fa-trash mr-1"></i>Supprimer
-                                </button>
-                                <button onclick="shareNews('${item.titre.replace(/'/g, "\\'")}', '${item.description.replace(/'/g, "\\'").replace(/\n/g, " ")}')" class="text-green-600 font-bold hover:underline">
-                                    <i class="fa-solid fa-share-nodes mr-1"></i>Partager
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        // B. AJOUTER OU MODIFIER (Submit)
-        async function handleNewsSubmit(e) {
-            e.preventDefault();
-            const btn = document.getElementById('submitNewsBtn');
-            const originalText = btn.innerText;
-            const editId = document.getElementById('editNewsId').value;
-            const existingImg = document.getElementById('existingImageUrl').value;
-
-            const title = document.getElementById('newsTitle').value;
-            const desc = document.getElementById('newsDesc').value;
-            const tag = document.getElementById('newsTag').value;
-            const file = document.getElementById('newsImage').files[0];
-
-            // Validation : En mode création, image obligatoire. En mode édition, optionnelle.
-            if (!editId && !file) {alert("Image obligatoire pour une nouvelle actu."); return;}
-
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4">Chargement...</td></tr>';
             try {
-                btn.disabled = true;
-                btn.innerText = "Traitement...";
-
-                let imageUrl = existingImg;
-
-                // Si nouvelle image choisie, on l'upload
-                if (file) {
-                    btn.innerText = "Envoi image...";
-                    const formData = new FormData();
-                    formData.append("image", file);
-                    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {method: "POST", body: formData});
-                    const json = await res.json();
-                    if (!json.success) throw new Error("Erreur ImgBB");
-                    imageUrl = json.data.url;
-                }
-
-                const newsData = {
-                    titre: title,
-                    description: desc,
-                    categorie: tag,
-                    image: imageUrl,
-                    date: new Date().toLocaleDateString()
-                };
-
-                btn.innerText = "Sauvegarde...";
-
-                if (editId) {
-                    // MODE MODIFICATION
-                    await updateDoc(doc(db, "actualites", editId), newsData);
-                    alert("Actualité modifiée !");
-                } else {
-                    // MODE CRÉATION
-                    await addDoc(collection(db, "actualites"), newsData);
-                    alert("Actualité publiée !");
-                }
-
-                resetNewsForm();
-                loadAdminNews(); // Rafraîchir la liste
-
-            } catch (error) {
-                console.error(error);
-                alert("Erreur: " + error.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerText = originalText;
-            }
+                const snap = await getDocs(collection(db, "membres"));
+                document.getElementById('count').innerText = snap.size;
+                tbody.innerHTML = '';
+                allUsersData = [];
+                snap.forEach(docSnap => {
+                    const u = docSnap.data();
+                    u.firebaseId = docSnap.id;
+                    allUsersData.push(u);
+                    tbody.innerHTML += `<tr class="hover:bg-gray-50 border-b"><td class="px-4 py-3"><img src="${u.photo}" class="w-8 h-8 rounded-full object-cover border border-gray-200"></td><td class="px-4 py-3"><div class="font-bold text-gray-800 text-xs">${u.prenom} ${u.nom}</div><div class="text-[10px] text-gray-400">${u.statut_pro || '-'}</div></td><td class="px-4 py-3 text-xs"><div>${u.telephone}</div><div class="truncate max-w-[100px]" title="${u.email}">${u.email}</div></td><td class="px-4 py-3 text-xs font-bold text-dtm-primary">${u.poste}</td><td class="px-4 py-3 text-center flex justify-center gap-2"><button onclick="viewUser('${docSnap.id}')" class="text-blue-500 hover:bg-blue-50 p-1.5 rounded" title="Voir"><i class="fa-solid fa-eye"></i></button><button onclick="delUser('${docSnap.id}')" class="text-red-500 hover:bg-red-50 p-1.5 rounded" title="Supprimer"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+                });
+            } catch (e) {console.error(e);}
         }
 
-        // C. PREPARER MODIFICATION
-        function editNews(id, title, tag, desc, img) {
-            // Remplir le formulaire
-            document.getElementById('editNewsId').value = id;
-            document.getElementById('existingImageUrl').value = img;
-            document.getElementById('newsTitle').value = title;
-            document.getElementById('newsTag').value = tag;
-            document.getElementById('newsDesc').value = desc;
+        function viewUser(id) {
+            const user = allUsersData.find(u => u.firebaseId === id);
+            if (!user) return;
+            document.getElementById('modalUserPhoto').src = user.photo;
+            document.getElementById('modalUserName').innerText = `${user.prenom} ${user.nom}`;
+            document.getElementById('modalUserId').innerText = `ID: ${user.id}`;
+            const comps = user.competences ? user.competences.join(', ') : 'Aucune';
+            document.getElementById('modalContent').innerHTML = `<div class="grid grid-cols-2 gap-6 text-sm"><div><h4 class="text-xs font-bold text-dtm-primary uppercase mb-2">Personnel</h4><p><span class="text-gray-500">Naissance:</span> ${user.date_naissance || '-'} à ${user.lieu_naissance || '-'}</p><p><span class="text-gray-500">Sexe:</span> ${user.sexe || '-'}</p><p><span class="text-gray-500">Adresse:</span> ${user.adresse || '-'}</p><p><span class="text-gray-500">Ville:</span> ${user.ville || '-'}</p></div><div><h4 class="text-xs font-bold text-dtm-primary uppercase mb-2">Contacts</h4><p><span class="text-gray-500">Email:</span> ${user.email}</p><p><span class="text-gray-500">Tel:</span> ${user.telephone}</p><p class="mt-2"><span class="text-gray-500">Statut Dahira:</span> <span class="font-bold text-green-600">${user.statut_dahira || '-'}</span></p></div><div class="col-span-2 border-t pt-4"><h4 class="text-xs font-bold text-dtm-primary uppercase mb-2">Académique & Pro</h4><div class="grid grid-cols-2 gap-4"><p><span class="text-gray-500">Statut Pro:</span> ${user.statut_pro || '-'}</p><p><span class="text-gray-500">Université:</span> ${user.universite || '-'}</p><p><span class="text-gray-500">Niveau:</span> ${user.niveau}</p><p><span class="text-gray-500">Année:</span> ${user.annee_etude || '-'}</p><p><span class="text-gray-500">Spécialité:</span> ${user.specialite}</p><p><span class="text-gray-500">Commission:</span> ${user.poste}</p></div></div><div class="col-span-2 bg-gray-50 p-3 rounded-lg"><h4 class="text-xs font-bold text-dtm-primary uppercase mb-1">Compétences</h4><p class="italic text-gray-600">${comps}</p></div></div>`;
+            document.getElementById('userModal').classList.remove('hidden');
+        }
+        function closeUserModal() {document.getElementById('userModal').classList.add('hidden');}
 
-            // Changer l'interface
-            document.getElementById('submitNewsBtn').innerText = "Mettre à jour l'actualité";
-            document.getElementById('submitNewsBtn').classList.remove('bg-dtm-dark');
-            document.getElementById('submitNewsBtn').classList.add('bg-orange-500', 'hover:bg-orange-600');
-            document.getElementById('cancelEditBtn').classList.remove('hidden');
-
-            // Scroll vers le formulaire
-            document.getElementById('newsTitle').focus();
+        async function delUser(id) {
+            const confirmed = await showConfirmModal("Voulez-vous vraiment supprimer ce membre ? Cette action est irréversible.");
+            if (confirmed) {await deleteDoc(doc(db, "membres", id)); loadMembers(); showNotification('success', "Membre supprimé.");}
         }
 
-        // D. ANNULER MODIFICATION
-        function resetNewsForm() {
-            document.querySelector('form').reset();
-            document.getElementById('editNewsId').value = "";
-            document.getElementById('existingImageUrl').value = "";
-            document.getElementById('submitNewsBtn').innerText = "Publier";
-            document.getElementById('submitNewsBtn').classList.add('bg-dtm-dark');
-            document.getElementById('submitNewsBtn').classList.remove('bg-orange-500', 'hover:bg-orange-600');
-            document.getElementById('cancelEditBtn').classList.add('hidden');
+        async function exportXLSX() {
+            if (typeof XLSX === 'undefined') {showNotification('warning', "Librairie non chargée."); return;}
+            if (allUsersData.length === 0) {showNotification('warning', "Aucune donnée."); return;}
+            let data = [];
+            allUsersData.forEach(u => {data.push({ID: u.id, Prénom: u.prenom, Nom: u.nom, Sexe: u.sexe || '', Date_Naissance: u.date_naissance || '', Lieu: u.lieu_naissance || '', Email: u.email, Tel: u.telephone, Adresse: u.adresse || '', Ville: u.ville || '', Statut_Dahira: u.statut_dahira || '', Statut_Pro: u.statut_pro || '', Université: u.universite || '', Spécialité: u.specialite, Niveau: u.niveau, Année: u.annee_etude || '', Compétences: u.competences ? u.competences.join(', ') : '', Commission: u.poste});});
+            const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Membres"); XLSX.writeFile(wb, "Base_DTM.xlsx");
+            showNotification('success', "Export terminé !");
         }
 
-        // E. SUPPRIMER
+        async function loadNewsAdmin() {
+            const tbody = document.getElementById('newsTbody'); tbody.innerHTML = '<tr><td colspan="4" class="text-center p-4">Chargement...</td></tr>';
+            try {
+                const snap = await getDocs(collection(db, "actualites")); tbody.innerHTML = '';
+                if (snap.empty) {tbody.innerHTML = '<tr><td colspan="4" class="text-center p-4 text-xs text-gray-400">Aucune actualité</td></tr>'; return;}
+                snap.forEach(docSnap => {
+                    const item = docSnap.data(); const id = docSnap.id;
+                    const safeTitle = item.titre.replace(/'/g, "&apos;"); const safeDesc = (item.description || "").replace(/'/g, "&apos;").replace(/\n/g, " ");
+                    tbody.innerHTML += `<tr class="hover:bg-gray-50 border-b text-xs"><td class="px-4 py-3"><img src="${item.image}" class="w-10 h-10 object-cover rounded shadow-sm"></td><td class="px-4 py-3 font-bold truncate max-w-[150px]">${item.titre}</td><td class="px-4 py-3 text-gray-500">${item.date}</td><td class="px-4 py-3 flex justify-center gap-2"><button onclick="startEditNews('${id}', '${safeTitle}', '${item.categorie}', '${item.image}', \`${safeDesc}\`)" class="text-blue-500 hover:bg-blue-50 p-1.5 rounded"><i class="fa-solid fa-pen"></i></button><button onclick="copyShareLink('${id}')" class="text-green-600 hover:bg-green-50 p-1.5 rounded"><i class="fa-solid fa-link"></i></button><button onclick="deleteNews('${id}')" class="text-red-500 hover:bg-red-50 p-1.5 rounded"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+                });
+            } catch (e) {console.error(e);}
+        }
+
         async function deleteNews(id) {
-            if (confirm("Voulez-vous vraiment supprimer cette actualité ?")) {
-                try {
-                    await deleteDoc(doc(db, "actualites", id));
-                    loadAdminNews();
-                } catch (e) {alert("Erreur: " + e.message);}
-            }
+            const confirmed = await showConfirmModal("Supprimer cette actualité ?");
+            if (confirmed) {await deleteDoc(doc(db, "actualites", id)); loadNewsAdmin(); showNotification('success', "Actualité supprimée.");}
         }
 
-        // F. PARTAGER
-        async function shareNews(title, text) {
-            const shareData = {
-                title: 'DTM UGB Actualité',
-                text: `📢 *${title}*\n\n${text}\n\nVia Dahira Touba Médecine UGB`
-            };
+        function copyShareLink(id) {const url = window.location.href.replace('admin.html', 'actualites.html') + '?id=' + id; navigator.clipboard.writeText(url); showNotification('success', "Lien copié !");}
+        function startEditNews(id, t, c, i, d) {document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen mr-2"></i>Modifier'; document.getElementById('submitBtn').innerText = "Mettre à jour"; document.getElementById('submitBtn').classList.replace('bg-dtm-dark', 'bg-blue-600'); document.getElementById('cancelEditBtn').classList.remove('hidden'); document.getElementById('imageStatus').classList.remove('hidden'); document.getElementById('editId').value = id; document.getElementById('editImageUrl').value = i; document.getElementById('newsTitle').value = t; document.getElementById('newsTag').value = c; document.getElementById('newsDesc').value = d; document.getElementById('newsImage').required = false; document.getElementById('formTitle').scrollIntoView({behavior: 'smooth'});}
+        function resetForm() {document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen-nib mr-2"></i>Publier une Actualité'; document.getElementById('submitBtn').innerText = "Publier"; document.getElementById('submitBtn').classList.replace('bg-blue-600', 'bg-dtm-dark'); document.getElementById('cancelEditBtn').classList.add('hidden'); document.getElementById('imageStatus').classList.add('hidden'); document.querySelector('form').reset(); document.getElementById('editId').value = ""; document.getElementById('newsImage').required = true;}
 
-            if (navigator.share) {
-                try {await navigator.share(shareData);} catch (err) { }
-            } else {
-                // Fallback PC
-                navigator.clipboard.writeText(shareData.text);
-                alert("Texte copié dans le presse-papier !");
-            }
+        async function handleNewsSubmit(e) {
+            e.preventDefault(); const btn = document.getElementById('submitBtn'); const txt = btn.innerText; btn.disabled = true; btn.innerText = "Traitement...";
+            const id = document.getElementById('editId').value; const file = document.getElementById('newsImage').files[0]; let imgUrl = document.getElementById('editImageUrl').value;
+            if (!id && !file) {showNotification('warning', "Image requise."); btn.disabled = false; btn.innerText = txt; return;}
+            try {
+                if (file) {const fd = new FormData(); fd.append("image", file); const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {method: "POST", body: fd}); const json = await res.json(); imgUrl = json.data.url;}
+                const data = {titre: document.getElementById('newsTitle').value, description: document.getElementById('newsDesc').value, categorie: document.getElementById('newsTag').value, image: imgUrl, date: new Date().toLocaleDateString()};
+                if (id) await updateDoc(doc(db, "actualites", id), data); else await addDoc(collection(db, "actualites"), data);
+                showNotification('success', id ? "Actualité mise à jour !" : "Actualité publiée !"); resetForm(); loadNewsAdmin();
+            } catch (e) {showNotification('warning', "Erreur technique.");} finally {btn.disabled = false; btn.innerText = id ? "Mettre à jour" : "Publier";}
         }
-
     </script>
-
 </body>
 
 </html>
