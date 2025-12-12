@@ -96,19 +96,33 @@
                     class="fa-solid fa-xmark text-xl"></i></button>
             <h3 class="text-xl font-bold text-dtm-dark mb-4 border-b pb-2">Cotisation Adhésion (1000 F)</h3>
             <p class="text-gray-600 mb-6 text-sm">
-                Pour débloquer le téléchargement de votre carte, veuillez payer la cotisation annuelle (1000 F) via l'un
-                des services ci-dessous.
+                Envoyez **1000 F** au trésorier. Cliquez sur l'icône de copie pour obtenir le numéro facilement.
             </p>
 
             <div class="space-y-3 mb-6">
-                <p class="font-bold text-sm text-gray-800">1. Transférer 1000 F à :</p>
-                <div class="bg-orange-50/70 p-3 rounded-lg flex justify-between items-center"><span
-                        class="font-medium text-orange-600"><i class="fa-solid fa-mobile-alt mr-2"></i> Orange
-                        Money:</span> <a href="tel:+221786363603" class="font-bold text-dtm-dark hover:underline">78 636
-                        36 03</a></div>
-                <div class="bg-blue-50/70 p-3 rounded-lg flex justify-between items-center"><span
-                        class="font-medium text-dtm-primary"><i class="fa-solid fa-wave-square mr-2"></i> Wave:</span>
-                    <a href="tel:+221789876543" class="font-bold text-dtm-dark hover:underline">78 636 36 03</a>
+                <p class="font-bold text-sm text-gray-800">1. Numéros de Paiement :</p>
+
+                <div class="bg-orange-50/70 p-3 rounded-lg flex justify-between items-center">
+                    <span class="font-medium text-orange-600"><i class="fa-solid fa-mobile-alt mr-2"></i> Orange
+                        Money:</span>
+                    <div class="flex items-center">
+                        <span id="omNumber" class="font-bold text-dtm-dark mr-3">78 636 36 03</span>
+                        <button onclick="copyNumber('786363603', 'Orange Money')"
+                            class="text-gray-500 hover:text-dtm-primary" title="Copier le numéro">
+                            <i class="fa-solid fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50/70 p-3 rounded-lg flex justify-between items-center">
+                    <span class="font-medium text-dtm-primary"><i class="fa-solid fa-wave-square mr-2"></i> Wave:</span>
+                    <div class="flex items-center">
+                        <span id="waveNumber" class="font-bold text-dtm-dark mr-3">78 636 36 03</span>
+                        <button onclick="copyNumber('786363603', 'Wave')" class="text-gray-500 hover:text-dtm-primary"
+                            title="Copier le numéro">
+                            <i class="fa-solid fa-copy"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <p class="font-bold text-xs text-red-500 pt-2 text-center">
@@ -219,12 +233,12 @@
 
                         <div id="paymentRequired" class="space-y-3 hidden">
                             <p class="text-red-600 font-semibold text-sm">
-                                <i class="fa-solid fa-triangle-exclamation mr-2"></i> Payer pour telecharger votre carte
-                                de membre.
+                                <i class="fa-solid fa-triangle-exclamation mr-2"></i>Veuillez effectuer le paiement pour
+                                télécharger votre carte.
                             </p>
                             <button onclick="document.getElementById('paymentModal').classList.remove('hidden')"
                                 class="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition-colors shadow-lg flex items-center justify-center">
-                                <i class="fa-solid fa-wallet mr-2"></i> Payer la carte (1000 F)
+                                <i class="fa-solid fa-wallet mr-2"></i> Payer la Cotisation (1000 F)
                             </button>
                         </div>
 
@@ -336,6 +350,7 @@
         window.closeEditModal = closeEditModal;
         window.downloadCard = downloadCard;
         window.loadProfile = loadProfile;
+        window.copyNumber = copyNumber; // Rendre la fonction de copie globale
 
         let currentUser = JSON.parse(localStorage.getItem('dtm_currentUser'));
         if (!currentUser || !currentUser.firebaseUid) {
@@ -354,6 +369,17 @@
             popup.classList.add('translate-y-0', 'opacity-100');
             setTimeout(() => {popup.classList.remove('translate-y-0', 'opacity-100'); popup.classList.add('-translate-y-[250%]', 'opacity-0');}, 3000);
         }
+
+        // NOUVELLE FONCTION: COPIER LE NUMÉRO (pour la modale)
+        function copyNumber(number, name) {
+            // Utilise l'API du presse-papier pour copier le numéro
+            navigator.clipboard.writeText(number).then(() => {
+                showSuccessNotification(`${name} : Numéro copié !`);
+            }).catch(err => {
+                alert(`Erreur lors de la copie du numéro ${name}.`);
+            });
+        }
+
 
         // FONCTION POUR SÉCURISER L'IMAGE DU LOGO SUR LA CARTE
         function loadLogoSafe() {
@@ -379,7 +405,6 @@
 
 
                     // --- GESTION DU STATUT DE COTISATION ---
-                    const cotisationPayee = memberData.cotisationPayee === true;
                     const downloadButton = document.getElementById('downloadButton');
                     const paymentRequiredBlock = document.getElementById('paymentRequired');
                     const loadingStatus = document.getElementById('loadingStatus');
@@ -389,27 +414,42 @@
                     // Cacher le statut de chargement
                     loadingStatus.classList.add('hidden');
 
-                    // Si le membre a été créé, mais qu'il manque des champs (comme 'filiere' dans votre image), 
-                    // la variable 'memberData' pourrait ne pas correspondre exactement à 'currentUser'
-                    // On force la mise à jour de la vue ici
+                    // Vérification de la validité de la cotisation
+                    const isPaidInDB = memberData.cotisationPayee === true;
+                    // Lire la date d'expiration (qui est une chaîne ISO stockée par l'admin)
+                    const dateFin = memberData.cotisationExpiration ? new Date(memberData.cotisationExpiration) : null;
+                    const today = new Date();
+                    let isExpired = false;
+                    let expirationText = '';
+                    let isValid = false;
 
-                    if (cotisationPayee) {
-                        // Statut "PAYÉ"
-                        cardCotisationStatus.innerHTML = 'ADHÉSION VALIDÉE 2025';
-                        cardCotisationStatus.className = 'text-[10px] font-bold text-green-400 text-center mt-1';
+                    if (isPaidInDB && dateFin) {
+                        if (today > dateFin) {
+                            isExpired = true;
+                            expirationText = `EXPIRÉE (${dateFin.toLocaleDateString()})`;
+                        } else {
+                            isValid = true;
+                            expirationText = ``;
+                        }
+                    }
+
+                    if (isValid) {
+                        // Statut "PAYÉ et VALIDE"
+                        cardCotisationStatus.innerHTML = expirationText;
+                        cardCotisationStatus.className = 'text-[10px] font-bold text-green-500 text-center mt-1';
 
                         downloadButton.classList.remove('hidden');
                         paymentRequiredBlock.classList.add('hidden');
                         cardElement.classList.remove('card-disabled');
 
                     } else {
-                        // Statut "NON PAYÉ / EN ATTENTE"
-                        cardCotisationStatus.innerHTML = 'COTI. EN ATTENTE DE PAIEMENT';
+                        // Statut "NON PAYÉ / EXPIRÉ"
+                        cardCotisationStatus.innerHTML = isExpired ? `COTISATION ${expirationText}` : 'COTI. EN ATTENTE DE PAIEMENT';
                         cardCotisationStatus.className = 'text-[10px] font-bold text-red-500 text-center mt-1';
 
                         downloadButton.classList.add('hidden');
                         paymentRequiredBlock.classList.remove('hidden');
-                        cardElement.classList.add('card-disabled'); // Griser la carte si non payé
+                        cardElement.classList.add('card-disabled'); // Griser la carte si non payé/expiré
                     }
 
                     // Remplissage de l'interface (détails et carte)
@@ -549,4 +589,3 @@
 </body>
 
 </html>
-
