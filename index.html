@@ -17,14 +17,15 @@
                 extend: {
                     colors: {dtm: {light: '#e0f2fe', primary: '#0284c7', dark: '#0c4a6e'}},
                     fontFamily: {sans: ['Montserrat', 'sans-serif']},
-                    // Ajout de l'animation personnalisée
                     animation: {
-                        'pulse-slow': 'pulse-slow 3s ease-in-out infinite',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                        'breath': 'breath 3s ease-in-out infinite', // Nouvelle animation pour le logo
                     },
                     keyframes: {
-                        'pulse-slow': {
+                        fadeInUp: {'0%': {opacity: '0', transform: 'translateY(20px)'}, '100%': {opacity: '1', transform: 'translateY(0)'}},
+                        breath: { // Keyframes pour l'effet zoom-dézoom
                             '0%, 100%': {transform: 'scale(1)'},
-                            '50%': {transform: 'scale(1.08)'}, // Zoom léger à 108%
+                            '50%': {transform: 'scale(1.08)'},
                         }
                     }
                 }
@@ -48,19 +49,6 @@
             background: linear-gradient(to bottom, rgba(2, 132, 199, 0.85), rgba(12, 74, 110, 0.95));
             position: absolute;
             inset: 0;
-        }
-
-        .fade-in {
-            animation: fadeIn 0.8s ease-out forwards;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
     </style>
 </head>
@@ -149,9 +137,9 @@
         </div>
     </nav>
 
-    <header class="hero-bg min-h-screen flex items-center justify-center pt-20 fade-in px-4">
+    <header class="hero-bg min-h-[95vh] flex items-center justify-center pt-20 pb-16 px-4 relative">
         <div class="blue-overlay"></div>
-        <div class="text-center max-w-4xl relative z-10 text-white">
+        <div class="text-center max-w-4xl relative z-10 text-white animate-fade-in-up">
             <h1 class="text-4xl md:text-7xl font-extrabold mb-6 tracking-tight leading-tight drop-shadow-lg">
                 Dahira Touba <br><span class="text-blue-200">Médecine</span>
             </h1>
@@ -173,8 +161,8 @@
             </div>
 
             <a href="#about"
-                class="absolute bottom-[-15vh] left-1/2 transform -translate-x-1/2 text-white/70 animate-bounce text-2xl hidden md:block hover:text-white transition-colors">
-                <i class="fa-solid fa-chevron-down"></i>
+                class="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white/80 hover:text-white transition-colors animate-bounce hidden md:block">
+                <i class="fa-solid fa-chevron-down text-3xl drop-shadow-md"></i>
             </a>
         </div>
     </header>
@@ -210,7 +198,7 @@
                 <div class="order-1 md:order-2 flex justify-center">
                     <div
                         class="relative w-full max-w-sm aspect-square bg-dtm-light rounded-full flex items-center justify-center p-8 shadow-inner">
-                        <img src="logo.png" class="w-3/4 h-auto drop-shadow-2xl animate-pulse-slow"
+                        <img src="logo.png" class="w-3/4 h-auto drop-shadow-2xl animate-breath"
                             onerror="this.src='https://cdn-icons-png.flaticon.com/512/1034/1034179.png'">
                     </div>
                 </div>
@@ -244,15 +232,21 @@
     </section>
 
     <footer class="bg-dtm-dark text-white py-8 text-center">
-        <p class="text-sm opacity-80">© 2025 Dahira Touba Médecine UGB. <span class="hidden sm:inline">|</span> <br
-                class="sm:hidden"> Au service de la communauté.</p>
+        <p class="text-sm opacity-80">
+            © 2025 Dahira Touba Médecine UGB.
+            <span class="hidden sm:inline">|</span>
+            <br class="sm:hidden">
+            <a href="mailto:dtm.ugb@gmail.com" class="text-white hover:text-dtm-light transition-colors font-medium">
+                dtm.ugb@gmail.com
+            </a>
+        </p>
     </footer>
 
     <script type="module">
         import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import {getFirestore, collection, getDocs, query, limit} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // VOS CLES
+        // VOS CLES (DTM-UGB-Officiel)
         const firebaseConfig = {apiKey: "AIzaSyC9O7wvG2s-teRO5IehT5K1ozJ48S2nDDo", authDomain: "dtm-ugb-officiel.firebaseapp.com", projectId: "dtm-ugb-officiel", storageBucket: "dtm-ugb-officiel.firebasestorage.app", messagingSenderId: "871436265978", appId: "1:871436265978:web:98bf9fb593bd6e46e3dc43", measurementId: "G-1P30LZJHYJ"};
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
