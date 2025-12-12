@@ -242,10 +242,21 @@
         import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import {getFirestore, doc, updateDoc} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = {apiKey: "AIzaSyAgO32iFQHG5LZPNRlPUbTmVef3bqs_5xk", authDomain: "dtm-ugb.firebaseapp.com", projectId: "dtm-ugb", storageBucket: "dtm-ugb.firebasestorage.app", messagingSenderId: "346661138136", appId: "1:346661138136:web:cf8e8196a65bda13e631ad", measurementId: "G-7ZVQ65D3RK"};
+        // ✅ CLES API OFFICIELLES (CORRIGÉES)
+        const firebaseConfig = {
+            apiKey: "AIzaSyC9O7wvG2s-teRO5IehT5K1ozJ48S2nDDo",
+            authDomain: "dtm-ugb-officiel.firebaseapp.com",
+            projectId: "dtm-ugb-officiel",
+            storageBucket: "dtm-ugb-officiel.firebasestorage.app",
+            messagingSenderId: "871436265978",
+            appId: "1:871436265978:web:98bf9fb593bd6e46e3dc43",
+            measurementId: "G-1P30LZJHYJ"
+        };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Export fonctions
         window.saveChanges = saveChanges;
         window.logout = logout;
         window.openEditModal = openEditModal;
@@ -258,7 +269,8 @@
         function showSuccessNotification(message) {
             const popup = document.getElementById('successPopup');
             document.getElementById('successText').innerText = message;
-            popup.classList.remove('-translate-y-[250%]', 'opacity-0'); popup.classList.add('translate-y-0', 'opacity-100');
+            popup.classList.remove('-translate-y-[250%]', 'opacity-0');
+            popup.classList.add('translate-y-0', 'opacity-100');
             setTimeout(() => {popup.classList.remove('translate-y-0', 'opacity-100'); popup.classList.add('-translate-y-[250%]', 'opacity-0');}, 3000);
         }
 
@@ -323,7 +335,7 @@
             e.preventDefault();
             const btn = document.getElementById('saveBtn'); const originalText = btn.innerText; btn.innerText = "Sauvegarde..."; btn.disabled = true;
 
-            // Mise à jour objet local
+            // Mise à jour locale
             currentUser.prenom = document.getElementById('editPrenom').value;
             currentUser.nom = document.getElementById('editNom').value;
             currentUser.email = document.getElementById('editEmail').value;
@@ -337,13 +349,15 @@
             currentUser.poste = document.getElementById('editPoste').value;
 
             try {
-                // MISE A JOUR FIREBASE
+                // MISE A JOUR FIREBASE (L'étape qui manquait !)
                 if (currentUser.firebaseUid) {
                     await updateDoc(doc(db, "membres", currentUser.firebaseUid), {
                         prenom: currentUser.prenom, nom: currentUser.nom, email: currentUser.email, telephone: currentUser.telephone,
                         adresse: currentUser.adresse, ville: currentUser.ville, statut_dahira: currentUser.statut_dahira,
                         statut_pro: currentUser.statut_pro, niveau: currentUser.niveau, annee_etude: currentUser.annee_etude, poste: currentUser.poste
                     });
+                } else {
+                    console.warn("Pas d'ID Firebase. Reconnectez-vous.");
                 }
 
                 localStorage.setItem('dtm_currentUser', JSON.stringify(currentUser));
@@ -352,7 +366,7 @@
                 showSuccessNotification("Modifications enregistrées !");
             } catch (error) {
                 console.error(error);
-                alert("Erreur technique : " + error.message);
+                alert("Erreur lors de la sauvegarde.");
             } finally {
                 btn.innerText = originalText; btn.disabled = false;
             }
