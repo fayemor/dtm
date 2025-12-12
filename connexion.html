@@ -26,7 +26,7 @@
                         }
                     },
                     fontFamily: {
-                        sans: ['Montserrat', 'sans-serif'], // Application de la police
+                        sans: ['Montserrat', 'sans-serif'],
                     }
                 }
             }
@@ -34,7 +34,6 @@
     </script>
 
     <style type="text/tailwindcss">
-        /* MÊME FOND QUE INSCRIPTION */
         body {
             background-image: url('https://images.unsplash.com/photo-1638202993928-7267aad84c31?q=80&w=1920');
             background-size: cover;
@@ -128,7 +127,7 @@
         import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import {getFirestore, collection, query, where, getDocs} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // VOS CLES API
+        // VOS CLES API (DTM OFFICIEL)
         const firebaseConfig = {
             apiKey: "AIzaSyC9O7wvG2s-teRO5IehT5K1ozJ48S2nDDo",
             authDomain: "dtm-ugb-officiel.firebaseapp.com",
@@ -170,15 +169,21 @@
                 if (querySnapshot.empty) {throw new Error("Aucun compte trouvé avec cet email.");}
 
                 let userFound = null;
+
                 querySnapshot.forEach((doc) => {
                     const userData = doc.data();
-                    if (userData.password === password) {userFound = userData;}
+                    if (userData.password === password) {
+                        // =======================================================
+                        // C'EST ICI LA MODIFICATION IMPORTANTE
+                        // On ajoute l'ID du document Firebase (doc.id) aux données
+                        // =======================================================
+                        userFound = {...userData, firebaseUid: doc.id};
+                    }
                 });
 
                 if (userFound) {
                     localStorage.setItem('dtm_currentUser', JSON.stringify(userFound));
 
-                    // Notif verte + redirection
                     showSuccessNotification("Connexion réussie ! Redirection...");
 
                     setTimeout(() => {
