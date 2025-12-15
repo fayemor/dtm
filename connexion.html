@@ -64,19 +64,22 @@
 
 <body>
 
-    <div id="notificationWrapper"
-        class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[100] pointer-events-none select-none">
-        <div id="successPopup"
-            class="bg-green-600/95 backdrop-blur-md text-white pl-4 pr-8 py-3 rounded-full shadow-2xl flex items-center space-x-4 transition-all duration-500 ease-out transform -translate-y-[250%] opacity-0 border border-green-500/50">
-            <div class="bg-white/20 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0">
-                <i class="fa-solid fa-check text-xl font-bold"></i>
+    <!-- MODALE ALERTE (SUCCESS/ERROR) -->
+    <div id="alertModal"
+        class="fixed inset-0 z-[200] hidden flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity">
+        <div
+            class="bg-white rounded-3xl shadow-2xl p-8 max-w-xs w-full text-center transform scale-100 transition-transform relative">
+            <div id="alertIcon" class="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-sm">
+                <!-- Icone dynamique -->
             </div>
-            <div>
-                <h4 class="font-bold text-base leading-none mb-1">Succès !</h4>
-                <p id="successText" class="text-sm text-green-100 leading-none">Connexion réussie.</p>
-            </div>
+            <h3 id="alertTitle" class="text-xl font-bold text-gray-800 mb-2">Message</h3>
+            <p id="alertMessage" class="text-gray-500 text-sm mb-6 leading-relaxed">Corps du message.</p>
+            <button onclick="document.getElementById('alertModal').classList.add('hidden')"
+                class="w-full px-6 py-2.5 rounded-xl bg-dtm-primary text-white font-bold hover:bg-blue-600 transition-colors">OK</button>
         </div>
     </div>
+    <!-- FIN MODALE ALERTE -->
+
 
     <div class="glass-overlay p-4">
         <div
@@ -106,9 +109,7 @@
                     <input type="password" id="loginPassword" required class="input-std" placeholder="••••••••">
                 </div>
 
-                <div id="errorMessage"
-                    class="hidden p-3 bg-red-50 border border-red-100 text-red-600 rounded-lg text-sm text-center font-medium">
-                </div>
+                <!-- Le div d'erreur simple est remplacé par la modale -->
 
                 <button type="submit" id="loginBtn"
                     class="w-full bg-dtm-primary hover:bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform hover:scale-[1.01] text-lg tracking-wide uppercase mt-4">
@@ -141,23 +142,51 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- NOTIFICATION ---
-        function showSuccessNotification(message) {
-            const popup = document.getElementById('successPopup');
-            document.getElementById('successText').innerText = message;
-            popup.classList.remove('-translate-y-[250%]', 'opacity-0');
-            popup.classList.add('translate-y-0', 'opacity-100', 'scale-105');
-            setTimeout(() => {popup.classList.remove('scale-105');}, 200);
+        // --- FONCTION MODALE ALERTE ---
+        function showAlertModal(type, message, redirect = false) {
+            const modal = document.getElementById('alertModal');
+            const iconDiv = document.getElementById('alertIcon');
+            const title = document.getElementById('alertTitle');
+            const msg = document.getElementById('alertMessage');
+            const button = modal.querySelector('button');
+
+            iconDiv.className = 'mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-sm';
+
+            if (type === 'success') {
+                iconDiv.classList.add('bg-green-100', 'text-green-600');
+                iconDiv.innerHTML = '<i class="fa-solid fa-check-circle text-3xl"></i>';
+                title.innerText = "Succès !";
+                button.innerText = "Continuer";
+            } else { // Error/Warning
+                iconDiv.classList.add('bg-red-100', 'text-red-600');
+                iconDiv.innerHTML = '<i class="fa-solid fa-exclamation-triangle text-3xl"></i>';
+                title.innerText = "Erreur";
+                button.innerText = "Réessayer";
+            }
+
+            msg.innerText = message;
+            modal.classList.remove('hidden');
+
+            if (redirect) {
+                // Si redirection est vraie (après succès), on attend un clic pour y aller
+                button.onclick = () => {
+                    window.location.href = "dashboard.html";
+                };
+            } else {
+                // Sinon, on ferme juste la modale
+                button.onclick = () => {
+                    modal.classList.add('hidden');
+                };
+            }
         }
 
         window.handleLogin = async function (e) {
             e.preventDefault();
             const btn = document.getElementById('loginBtn');
-            const errorDiv = document.getElementById('errorMessage');
+            const initialBtnText = btn.innerHTML; // Sauvegarde l'état initial pour le rétablir
 
             btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Connexion...';
             btn.disabled = true;
-            errorDiv.classList.add('hidden');
 
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
@@ -166,17 +195,16 @@
                 const q = query(collection(db, "membres"), where("email", "==", email));
                 const querySnapshot = await getDocs(q);
 
-                if (querySnapshot.empty) {throw new Error("Aucun compte trouvé avec cet email.");}
+                if (querySnapshot.empty) {
+                    throw new Error("Aucun compte trouvé avec cet email.");
+                }
 
                 let userFound = null;
 
                 querySnapshot.forEach((doc) => {
                     const userData = doc.data();
                     if (userData.password === password) {
-                        // =======================================================
-                        // C'EST ICI LA MODIFICATION IMPORTANTE
-                        // On ajoute l'ID du document Firebase (doc.id) aux données
-                        // =======================================================
+                        // Récupère l'ID Firebase pour les modifications futures
                         userFound = {...userData, firebaseUid: doc.id};
                     }
                 });
@@ -184,21 +212,18 @@
                 if (userFound) {
                     localStorage.setItem('dtm_currentUser', JSON.stringify(userFound));
 
-                    showSuccessNotification("Connexion réussie ! Redirection...");
+                    showAlertModal("success", "Connexion réussie !", true);
 
-                    setTimeout(() => {
-                        window.location.href = "dashboard.html";
-                    }, 1500);
-
+                    // Pas de setTimeout ici, la redirection se fait au clic sur le bouton de la modale
                 } else {
                     throw new Error("Mot de passe incorrect.");
                 }
 
             } catch (error) {
                 console.error(error);
-                errorDiv.innerText = error.message;
-                errorDiv.classList.remove('hidden');
-                btn.innerHTML = 'Se connecter';
+                showAlertModal("error", error.message);
+
+                btn.innerHTML = initialBtnText;
                 btn.disabled = false;
             }
         }
