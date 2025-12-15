@@ -58,6 +58,7 @@
                 class="w-full px-6 py-2.5 rounded-xl bg-dtm-primary text-white font-bold hover:bg-blue-600 transition-colors">OK</button>
         </div>
     </div>
+    <!-- FIN MODALE ALERTE -->
 
 
     <div class="glass-overlay py-12 px-4">
@@ -187,6 +188,16 @@
                             class="flex items-center space-x-3 cursor-pointer hover:bg-white p-2 rounded-lg transition-colors"><input
                                 type="checkbox" name="competences" value="Logistique"
                                 class="w-5 h-5 accent-dtm-primary rounded"><span>Logistique</span></label>
+                        <label
+                            class="flex items-center space-x-3 cursor-pointer hover:bg-white p-2 rounded-lg transition-colors"><input
+                                type="checkbox" id="otherCompetenceCheckbox"
+                                class="w-5 h-5 accent-dtm-primary rounded"><span>Autres (Préciser)</span></label>
+                    </div>
+
+                    <div id="otherCompetenceArea" class="mt-4 hidden">
+                        <label class="label-std">Précisez vos autres compétences</label>
+                        <textarea id="otherCompetenceText" rows="2" class="input-std"
+                            placeholder="Ex: Développement Web, Traduction, Design Graphique..."></textarea>
                     </div>
                 </div>
 
@@ -203,8 +214,16 @@
                         <option value="Discipline">Commission Discipline</option>
                     </select></div>
 
-                <div><label class="label-std">Mot de passe (Connexion)</label><input type="password" id="password"
-                        required class="input-std" placeholder="••••••••"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="label-std">Mot de passe (Connexion)</label>
+                        <input type="password" id="password" required class="input-std" placeholder="••••••••">
+                    </div>
+                    <div>
+                        <label class="label-std">Confirmer le mot de passe</label>
+                        <input type="password" id="confirmPassword" required class="input-std" placeholder="••••••••">
+                    </div>
+                </div>
 
                 <div class="pt-8">
                     <button type="submit" id="submitBtn"
@@ -233,12 +252,28 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // --- GESTION DU CHAMP "AUTRES COMPÉTENCES" ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkbox = document.getElementById('otherCompetenceCheckbox');
+            const area = document.getElementById('otherCompetenceArea');
+            checkbox.addEventListener('change', () => {
+                if (checkbox.checked) {
+                    area.classList.remove('hidden');
+                    area.querySelector('textarea').required = true;
+                } else {
+                    area.classList.add('hidden');
+                    area.querySelector('textarea').required = false;
+                    area.querySelector('textarea').value = ''; // Réinitialiser le texte
+                }
+            });
+        });
+
         // --- FONCTION MODALE ALERTE (Pour remplacer les popups) ---
         function showAlertModal(type, message, redirect = false) {
             const modal = document.getElementById('alertModal');
-            const iconDiv = document.getElementById('alertIcon');
-            const title = document.getElementById('alertTitle');
-            const msg = document.getElementById('alertMessage');
+            const iconDiv = modal.querySelector('#alertIcon');
+            const title = modal.querySelector('#alertTitle');
+            const msg = modal.querySelector('#alertMessage');
             const button = modal.querySelector('button');
 
             iconDiv.className = 'mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-sm';
@@ -301,6 +336,18 @@
 
             const photoInput = document.getElementById('userPhoto');
             const file = photoInput.files[0];
+            const otherCompetenceText = document.getElementById('otherCompetenceText').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+
+            if (password !== confirmPassword) {
+                showAlertModal("error", "Les mots de passe ne correspondent pas !");
+                submitBtn.disabled = false;
+                submitBtn.innerText = originalText;
+                return;
+            }
+
 
             if (!file) {
                 showAlertModal("error", "Veuillez ajouter une photo de profil.");
@@ -318,6 +365,20 @@
 
             const competences = [];
             document.querySelectorAll('input[name="competences"]:checked').forEach(cb => competences.push(cb.value));
+
+            // Ajouter les autres compétences si le champ n'est pas vide
+            if (otherCompetenceText) {
+                competences.push(otherCompetenceText);
+            }
+
+            // Vérification si au moins une compétence est cochée ou précisée
+            if (competences.length === 0) {
+                showAlertModal("error", "Veuillez sélectionner au moins une compétence.");
+                submitBtn.disabled = false;
+                submitBtn.innerText = originalText;
+                return;
+            }
+
 
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -357,14 +418,14 @@
                         specialite: document.getElementById('specialite').value,
                         annee_etude: document.getElementById('annee_etude').value,
 
-                        competences: competences,
+                        competences: competences, // Contient maintenant les compétences standard + autres
                         poste: document.getElementById('poste').value,
 
-                        password: document.getElementById('password').value,
+                        password: password, // Utilise la variable "password" validée
                         photo: reader.result,
                         date: new Date().toLocaleDateString(),
 
-                        // Nouveau champ pour la gestion de la cotisation
+                        // Champ de gestion de la cotisation
                         cotisationPayee: false,
                         cotisationExpiration: null
                     };
