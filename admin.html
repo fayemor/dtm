@@ -53,27 +53,21 @@
 
 <body>
 
-    <div id="notificationWrapper"
-        class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[100] pointer-events-none select-none flex flex-col gap-3 w-full max-w-sm px-4">
-        <div id="successPopup"
-            class="bg-green-600/95 backdrop-blur-md text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center space-x-4 transition-all duration-500 ease-out transform -translate-y-[250%] opacity-0">
-            <div class="bg-white/20 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0"><i
-                    class="fa-solid fa-check text-xl"></i></div>
-            <div>
-                <h4 class="font-bold text-base leading-tight">Effectué !</h4>
-                <p id="successText" class="text-sm text-green-100">Opération réussie.</p>
+    <!-- MODALE ALERTE (SUCCESS/WARNING) -->
+    <div id="alertModal"
+        class="fixed inset-0 z-[200] hidden flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity">
+        <div
+            class="bg-white rounded-3xl shadow-2xl p-8 max-w-xs w-full text-center transform scale-100 transition-transform relative">
+            <div id="alertIcon" class="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-sm">
+                <!-- Icone dynamique -->
             </div>
-        </div>
-        <div id="warningPopup"
-            class="bg-orange-500/95 backdrop-blur-md text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center space-x-4 transition-all duration-500 ease-out transform -translate-y-[250%] opacity-0 absolute w-full">
-            <div class="bg-white/20 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0"><i
-                    class="fa-solid fa-triangle-exclamation text-xl"></i></div>
-            <div>
-                <h4 class="font-bold text-base leading-tight">Erreur</h4>
-                <p id="warningText" class="text-sm text-orange-100">Action impossible.</p>
-            </div>
+            <h3 id="alertTitle" class="text-xl font-bold text-gray-800 mb-2">Message</h3>
+            <p id="alertMessage" class="text-gray-500 text-sm mb-6 leading-relaxed">Corps du message.</p>
+            <button onclick="document.getElementById('alertModal').classList.add('hidden')"
+                class="w-full px-6 py-2.5 rounded-xl bg-dtm-primary text-white font-bold hover:bg-blue-600 transition-colors">OK</button>
         </div>
     </div>
+
 
     <div id="confirmModal"
         class="fixed inset-0 z-[200] hidden flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity">
@@ -144,6 +138,11 @@
                 class="flex flex-col md:flex-row justify-between items-center mb-8 bg-white p-4 rounded-xl shadow-sm gap-4 border border-gray-100">
                 <h2 class="text-2xl font-bold text-dtm-dark pl-2">Administration</h2>
                 <div class="flex gap-3 flex-wrap">
+                    <!-- NOUVEAU BOUTON MAIL GROUPÉ -->
+                    <button onclick="sendGroupEmail()"
+                        class="bg-pink-600 text-white px-5 py-2 rounded-lg font-bold shadow hover:bg-pink-700 flex items-center transition-colors"><i
+                            class="fa-solid fa-envelope-open-text mr-2"></i> Envoyer Mail Groupé</button>
+
                     <button onclick="copyMailingList()"
                         class="bg-blue-600 text-white px-5 py-2 rounded-lg font-bold shadow hover:bg-blue-700 flex items-center transition-colors"><i
                             class="fa-solid fa-envelope mr-2"></i> Liste Emails</button>
@@ -159,8 +158,20 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2 space-y-8">
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+
+                        <!-- CHAMP DE RECHERCHE -->
+                        <div class="p-4 bg-gray-50 border-b">
+                            <div class="relative">
+                                <i
+                                    class="fa-solid fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" id="searchInput" onkeyup="filterMembers()"
+                                    placeholder="Rechercher par Nom, Email, ID ou Poste..."
+                                    class="w-full pl-12 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-dtm-primary outline-none">
+                            </div>
+                        </div>
+
                         <div class="p-4 border-b bg-gray-50 font-bold flex justify-between items-center">
-                            <span class="text-gray-700">Membres Inscrits</span>
+                            <span class="text-gray-700" id="memberListTitle">Membres Inscrits</span>
                             <span class="bg-dtm-primary text-white text-xs px-3 py-1 rounded-full" id="count">0</span>
                         </div>
                         <div class="overflow-x-auto max-h-[400px] overflow-y-auto">
@@ -255,11 +266,12 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
+        // allUsersData stocke TOUS les membres chargés
         let allUsersData = [];
         let confirmResolver = null;
 
         // Exports
-        window.handleAdminLogin = handleAdminLogin; window.logoutAdmin = logoutAdmin; window.delUser = delUser; window.viewUser = viewUser; window.closeUserModal = closeUserModal; window.exportXLSX = exportXLSX; window.handleNewsSubmit = handleNewsSubmit; window.deleteNews = deleteNews; window.startEditNews = startEditNews; window.shareNewsAdmin = shareNewsAdmin; window.resetForm = resetForm; window.loadNewsAdmin = loadNewsAdmin; window.showNotification = showNotification; window.closeConfirm = closeConfirm; window.copyMailingList = copyMailingList; window.validatePayment = validatePayment;
+        window.handleAdminLogin = handleAdminLogin; window.logoutAdmin = logoutAdmin; window.delUser = delUser; window.viewUser = viewUser; window.closeUserModal = closeUserModal; window.exportXLSX = exportXLSX; window.handleNewsSubmit = handleNewsSubmit; window.deleteNews = deleteNews; window.startEditNews = startEditNews; window.shareNewsAdmin = shareNewsAdmin; window.resetForm = resetForm; window.loadNewsAdmin = loadNewsAdmin; window.showNotification = showNotification; window.closeConfirm = closeConfirm; window.copyMailingList = copyMailingList; window.validatePayment = validatePayment; window.filterMembers = filterMembers; window.sendGroupEmail = sendGroupEmail; // Export de la nouvelle fonction
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -280,21 +292,45 @@
             try {
                 btn.innerText = "Vérification...";
                 await signInWithEmailAndPassword(auth, email, pass);
-                showNotification('success', "Connexion réussie");
+                showAlertModal('success', "Connexion réussie");
             } catch (error) {
-                showNotification('warning', "Email ou mot de passe incorrect.");
+                showAlertModal('warning', "Email ou mot de passe incorrect.");
                 btn.innerText = "Connexion";
             }
         }
 
         async function logoutAdmin() {await signOut(auth);}
 
+        // --- NOUVELLE FONCTION ALERTE MODALE ---
+        function showAlertModal(type, message) {
+            const modal = document.getElementById('alertModal');
+            const iconDiv = document.getElementById('alertIcon');
+            const title = document.getElementById('alertTitle');
+            const msg = document.getElementById('alertMessage');
+
+            iconDiv.className = 'mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-sm';
+
+            if (type === 'success') {
+                iconDiv.classList.add('bg-green-100', 'text-green-600');
+                iconDiv.innerHTML = '<i class="fa-solid fa-check-circle text-3xl"></i>';
+                title.innerText = "Succès !";
+            } else if (type === 'warning') {
+                iconDiv.classList.add('bg-orange-100', 'text-orange-600');
+                iconDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-3xl"></i>';
+                title.innerText = "Attention";
+            } else {
+                iconDiv.classList.add('bg-red-100', 'text-red-600');
+                iconDiv.innerHTML = '<i class="fa-solid fa-xmark-circle text-3xl"></i>';
+                title.innerText = "Erreur";
+            }
+
+            msg.innerText = message;
+            modal.classList.remove('hidden');
+        }
+
+        // Ancienne fonction showNotification pour l'Admin (maintenant redirect vers showAlertModal)
         function showNotification(type, message) {
-            const popup = document.getElementById(type === 'success' ? 'successPopup' : 'warningPopup');
-            const text = document.getElementById(type === 'success' ? 'successText' : 'warningText');
-            text.innerText = message;
-            popup.classList.remove('-translate-y-[250%]', 'opacity-0'); popup.classList.add('translate-y-0', 'opacity-100');
-            setTimeout(() => {popup.classList.remove('translate-y-0', 'opacity-100'); popup.classList.add('-translate-y-[250%]', 'opacity-0');}, 3000);
+            showAlertModal(type, message);
         }
 
         function showConfirmModal(message, confirmText = "Supprimer") {
@@ -308,112 +344,171 @@
         document.getElementById('confirmBtnAction').onclick = () => closeConfirm(true);
 
 
-        // --- LOGIQUE D'EXPIRATION ET DE VALIDATION DE PAIEMENT (CORRIGÉE POUR LE 30 AOÛT) ---
+        // --- LOGIQUE D'EXPIRATION ET DE VALIDATION DE PAIEMENT (30 AOÛT) ---
 
-        // 1. Fonction pour valider/réactiver la cotisation
         async function validatePayment(id) {
             const confirmed = await showConfirmModal("Marquer la cotisation comme payée ? (Expiration le 30 août de l'année prochaine)");
             if (confirmed) {
                 try {
                     const userRef = doc(db, "membres", id);
 
-                    // Calcul de la date d'expiration (30 août de l'année suivante)
                     const now = new Date();
                     const currentYear = now.getFullYear();
 
-                    // Si nous sommes après le 30 août, on expire l'année suivante. Sinon l'année en cours.
-                    // Pour simplifier, on cible TOUJOURS le 30/08 de l'année suivante ou l'année d'après
-                    let targetYear = currentYear;
+                    const isAfterAugust30th = now.getMonth() > 7 || (now.getMonth() === 7 && now.getDate() > 30);
+                    const targetYear = isAfterAugust30th ? currentYear + 1 : currentYear;
 
-                    // Si on est APRÈS le 30 août de cette année, on cible l'année suivante
-                    if (now.getMonth() > 7 || (now.getMonth() === 7 && now.getDate() > 30)) {
-                        targetYear += 1;
-                    }
-
-                    // La date d d'expiration est le 30 août de l'année cible.
                     const expirationDate = new Date(targetYear, 7, 30); // 7 est Août (0-indexé)
 
-                    // Mise à jour de la DB : ajoute la date d'expiration au format ISO string
                     await updateDoc(userRef, {
                         cotisationPayee: true,
                         cotisationExpiration: expirationDate.toISOString() // Date au format standard international
                     });
 
-                    loadMembers(); // Recharger pour mettre à jour le tableau
-                    showNotification('success', `Cotisation validée ! Expiration: ${expirationDate.toLocaleDateString()}`);
+                    loadMembers();
+                    showAlertModal('success', `Cotisation validée ! Expiration: ${expirationDate.toLocaleDateString()}`);
                 } catch (e) {
-                    showNotification('warning', "Erreur validation: " + e.message);
+                    showAlertModal('warning', "Erreur validation: " + e.message);
                 }
             }
         }
 
 
         async function loadMembers() {
-            const tbody = document.getElementById('tbody'); tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4">Chargement...</td></tr>';
+            const tbody = document.getElementById('tbody');
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Chargement...</td></tr>';
+
             try {
                 const snap = await getDocs(collection(db, "membres"));
-                document.getElementById('count').innerText = snap.size;
-                tbody.innerHTML = '';
                 allUsersData = [];
-
-                const today = new Date();
 
                 snap.forEach(docSnap => {
                     const u = docSnap.data();
                     u.firebaseId = docSnap.id;
                     allUsersData.push(u);
-
-                    let isPaid = u.cotisationPayee === true;
-                    let statusText = 'En attente';
-                    let statusClass = 'bg-red-custom text-red-700';
-                    let needsValidation = true;
-
-                    if (isPaid && u.cotisationExpiration) {
-                        // Lire la date d'expiration de la DB
-                        const expirationDate = new Date(u.cotisationExpiration);
-
-                        if (today <= expirationDate) {
-                            // Payé ET Non expiré
-                            statusText = `Payée (Fin: ${expirationDate.toLocaleDateString()})`;
-                            statusClass = 'bg-green-100 text-green-700';
-                            needsValidation = false;
-                        } else {
-                            // Payé MAIS Expiré
-                            statusText = `Expirée (Fin: ${expirationDate.toLocaleDateString()})`;
-                            statusClass = 'bg-yellow-100 text-orange-700';
-                            needsValidation = true; // L'admin doit repayer/réactiver
-                        }
-                    }
-
-                    const validateButton = !needsValidation
-                        ? `<button class="text-gray-400 p-1.5 rounded" disabled title="Déjà valide"><i class="fa-solid fa-check"></i></button>`
-                        : `<button onclick="validatePayment('${docSnap.id}')" class="text-green-500 hover:bg-green-50 p-1.5 rounded" title="Valider paiement/Réactiver"><i class="fa-solid fa-hand-holding-dollar"></i></button>`;
-
-                    tbody.innerHTML += `
-                        <tr class="hover:bg-gray-50 border-b">
-                            <td class="px-4 py-3"><img src="${u.photo}" class="w-8 h-8 rounded-full object-cover border border-gray-200"></td>
-                            <td class="px-4 py-3"><div class="font-bold text-gray-800 text-xs">${u.prenom} ${u.nom}</div><div class="text-[10px] text-gray-400">${u.email || '-'}</div></td>
-                            <td class="px-4 py-3 text-xs font-bold text-dtm-primary">${u.poste}</td>
-                            
-                            <td class="px-4 py-3 text-xs">
-                                <span class="px-2 py-0.5 rounded-lg font-bold ${statusClass}">${statusText}</span>
-                            </td>
-
-                            <td class="px-4 py-3 text-center flex justify-center gap-2">
-                                ${validateButton}
-                                <button onclick="viewUser('${docSnap.id}')" class="text-blue-500 hover:bg-blue-50 p-1.5 rounded" title="Voir détails"><i class="fa-solid fa-eye"></i></button>
-                                <button onclick="delUser('${docSnap.id}')" class="text-red-500 hover:bg-red-50 p-1.5 rounded" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>`;
                 });
-            } catch (e) {console.error(e);}
+
+                displayMembers(allUsersData);
+
+            } catch (e) {
+                console.error("Erreur de chargement des membres:", e);
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-red-500">Erreur lors du chargement des données.</td></tr>';
+            }
+        }
+
+        // --- NOUVELLE FONCTION: FILTRER ET AFFICHER LES MEMBRES ---
+        function displayMembers(membersToDisplay) {
+            const tbody = document.getElementById('tbody');
+            const memberCount = document.getElementById('count');
+            const searchInput = document.getElementById('searchInput');
+
+            tbody.innerHTML = '';
+            memberCount.innerText = membersToDisplay.length;
+
+            if (membersToDisplay.length === 0) {
+                const message = searchInput.value.trim() !== "" ? 'Aucun utilisateur trouvé.' : 'Aucun membre inscrit.';
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center p-4 text-gray-500">${message}</td></tr>`;
+                return;
+            }
+
+            const today = new Date();
+
+            membersToDisplay.forEach(u => {
+                let isPaid = u.cotisationPayee === true;
+                let statusText = 'En attente';
+                let statusClass = 'bg-red-custom text-red-700';
+                let needsValidation = true;
+
+                if (isPaid && u.cotisationExpiration) {
+                    const expirationDate = new Date(u.cotisationExpiration);
+
+                    if (today <= expirationDate) {
+                        statusText = `Payée (Fin: ${expirationDate.toLocaleDateString()})`;
+                        statusClass = 'bg-green-100 text-green-700';
+                        needsValidation = false;
+                    } else {
+                        statusText = `Expirée (Fin: ${expirationDate.toLocaleDateString()})`;
+                        statusClass = 'bg-yellow-100 text-orange-700';
+                        needsValidation = true;
+                    }
+                }
+
+                const validateButton = !needsValidation
+                    ? `<button class="text-gray-400 p-1.5 rounded" disabled title="Déjà valide"><i class="fa-solid fa-check"></i></button>`
+                    : `<button onclick="validatePayment('${u.firebaseId}')" class="text-green-500 hover:bg-green-50 p-1.5 rounded" title="Valider paiement/Réactiver"><i class="fa-solid fa-hand-holding-dollar"></i></button>`;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 border-b">
+                        <td class="px-4 py-3"><img src="${u.photo}" class="w-8 h-8 rounded-full object-cover border border-gray-200"></td>
+                        <td class="px-4 py-3"><div class="font-bold text-gray-800 text-xs">${u.prenom} ${u.nom}</div><div class="text-[10px] text-gray-400">${u.email || '-'}</div></td>
+                        <td class="px-4 py-3 text-xs font-bold text-dtm-primary">${u.poste}</td>
+                        
+                        <td class="px-4 py-3 text-xs">
+                            <span class="px-2 py-0.5 rounded-lg font-bold ${statusClass}">${statusText}</span>
+                        </td>
+
+                        <td class="px-4 py-3 text-center flex justify-center gap-2">
+                            ${validateButton}
+                            <button onclick="viewUser('${u.firebaseId}')" class="text-blue-500 hover:bg-blue-50 p-1.5 rounded" title="Voir détails"><i class="fa-solid fa-eye"></i></button>
+                            <button onclick="delUser('${u.firebaseId}')" class="text-red-500 hover:bg-red-50 p-1.5 rounded" title="Supprimer"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        // 2. Fonction de filtrage appelée par l'input
+        function filterMembers() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+
+            const filtered = allUsersData.filter(user => {
+                const searchString = [
+                    user.prenom,
+                    user.nom,
+                    user.email,
+                    user.id,
+                    user.poste
+                ].join(' ').toLowerCase();
+
+                return searchString.includes(query);
+            });
+
+            displayMembers(filtered);
+        }
+
+        // --- Fonctions Email ---
+
+        // Nouvelle fonction pour envoyer un mail groupé via mailto
+        function sendGroupEmail() {
+            if (allUsersData.length === 0) {
+                showAlertModal('warning', "Aucun membre trouvé pour l'envoi de mail.");
+                return;
+            }
+
+            // Filtrer les emails valides et les joindre pour le BCC (Cci)
+            const bccList = allUsersData.map(u => u.email).filter(e => e && e.includes('@')).join(',');
+
+            if (bccList.length === 0) {
+                showAlertModal('warning', "Aucun email valide trouvé.");
+                return;
+            }
+
+            // Construire le lien mailto:
+            const subject = encodeURIComponent("Communication importante du Dahira Touba Médecine");
+            const body = encodeURIComponent("Salam, \n\n[Écrivez votre message ici]\n\n---Bureau DTM UGB");
+
+            const mailtoLink = `mailto:dtm.ugb@gmail.com?bcc=${bccList}&subject=${subject}&body=${body}`;
+
+            // Ouvrir le client mail (Gmail, Outlook, etc.)
+            window.location.href = mailtoLink;
         }
 
         function copyMailingList() {
-            if (allUsersData.length === 0) {showNotification('warning', "Aucun membre."); return;}
-            const emails = allUsersData.map(u => u.email).filter(e => e).join(',');
+            if (allUsersData.length === 0) {showAlertModal('warning', "Aucun membre."); return;}
+            const emails = allUsersData.map(u => u.email).filter(e => e).join(';'); // Utiliser ; pour Outlook/Windows
             navigator.clipboard.writeText(emails).then(() => {
-                showNotification('success', `${allUsersData.length} emails copiés !`);
+                showAlertModal('success', `${allUsersData.length} emails copiés dans le presse-papier (utilisez l'option Cci).`);
+            }).catch(err => {
+                showAlertModal('warning', "Erreur lors de la copie. Veuillez copier manuellement depuis l'export Excel.");
             });
         }
 
@@ -430,12 +525,12 @@
 
         async function delUser(id) {
             const confirmed = await showConfirmModal("Voulez-vous vraiment supprimer ce membre ?");
-            if (confirmed) {await deleteDoc(doc(db, "membres", id)); loadMembers(); showNotification('success', "Membre supprimé.");}
+            if (confirmed) {await deleteDoc(doc(db, "membres", id)); loadMembers(); showAlertModal('success', "Membre supprimé.");}
         }
 
         async function exportXLSX() {
-            if (typeof XLSX === 'undefined') {showNotification('warning', "Librairie non chargée."); return;}
-            if (allUsersData.length === 0) {showNotification('warning', "Aucune donnée."); return;}
+            if (typeof XLSX === 'undefined') {showAlertModal('warning', "Librairie non chargée."); return;}
+            if (allUsersData.length === 0) {showAlertModal('warning', "Aucune donnée."); return;}
             let data = [];
             allUsersData.forEach(u => {
                 const expiration = u.cotisationExpiration ? new Date(u.cotisationExpiration).toLocaleDateString() : 'N/A';
@@ -449,7 +544,7 @@
                 });
             });
             const ws = XLSX.utils.json_to_sheet(data); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Membres"); XLSX.writeFile(wb, "Base_DTM.xlsx");
-            showNotification('success', "Export terminé !");
+            showAlertModal('success', "Export terminé !");
         }
 
         async function loadNewsAdmin() {
@@ -468,12 +563,12 @@
         async function shareNewsAdmin(id, title) {
             const shareUrl = window.location.href.replace('admin.html', 'actualites.html') + '?id=' + id;
             const shareData = {title: 'DTM UGB - Actualité', text: 'Regarde ça : ' + title, url: shareUrl};
-            if (navigator.share) {try {await navigator.share(shareData);} catch (err) { } } else {navigator.clipboard.writeText(shareUrl).then(() => {showNotification('success', "Lien copié !");});}
+            if (navigator.share) {try {await navigator.share(shareData);} catch (err) { } } else {navigator.clipboard.writeText(shareUrl).then(() => {showAlertModal('success', "Lien copié !");});}
         }
 
         async function deleteNews(id) {
             const confirmed = await showConfirmModal("Supprimer cette actualité ?");
-            if (confirmed) {await deleteDoc(doc(db, "actualites", id)); loadNewsAdmin(); showNotification('success', "Actualité supprimée.");}
+            if (confirmed) {await deleteDoc(doc(db, "actualites", id)); loadNewsAdmin(); showAlertModal('success', "Actualité supprimée.");}
         }
 
         function startEditNews(id, t, c, i, d) {document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen mr-2"></i>Modifier'; document.getElementById('submitBtn').innerText = "Mettre à jour"; document.getElementById('submitBtn').classList.replace('bg-dtm-dark', 'bg-blue-600'); document.getElementById('cancelEditBtn').classList.remove('hidden'); document.getElementById('imageStatus').classList.remove('hidden'); document.getElementById('editId').value = id; document.getElementById('editImageUrl').value = i; document.getElementById('newsTitle').value = t; document.getElementById('newsTag').value = c; document.getElementById('newsDesc').value = d; document.getElementById('newsImage').required = false; document.getElementById('formTitle').scrollIntoView({behavior: 'smooth'});}
@@ -482,13 +577,13 @@
         async function handleNewsSubmit(e) {
             e.preventDefault(); const btn = document.getElementById('submitBtn'); const txt = btn.innerText; btn.disabled = true; btn.innerText = "Traitement...";
             const id = document.getElementById('editId').value; const file = document.getElementById('newsImage').files[0]; let imgUrl = document.getElementById('editImageUrl').value;
-            if (!id && !file) {showNotification('warning', "Image requise."); btn.disabled = false; btn.innerText = txt; return;}
+            if (!id && !file) {showAlertModal('warning', "Image requise."); btn.disabled = false; btn.innerText = txt; return;}
             try {
                 if (file) {const fd = new FormData(); fd.append("image", file); const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {method: "POST", body: fd}); const json = await res.json(); imgUrl = json.data.url;}
                 const data = {titre: document.getElementById('newsTitle').value, description: document.getElementById('newsDesc').value, categorie: document.getElementById('newsTag').value, image: imgUrl, date: new Date().toLocaleDateString()};
                 if (id) await updateDoc(doc(db, "actualites", id), data); else await addDoc(collection(db, "actualites"), data);
-                showNotification('success', id ? "Actualité mise à jour !" : "Actualité publiée !"); resetForm(); loadNewsAdmin();
-            } catch (e) {showNotification('warning', "Erreur technique.");} finally {btn.disabled = false; btn.innerText = id ? "Mettre à jour" : "Publier";}
+                showAlertModal('success', id ? "Actualité mise à jour !" : "Actualité publiée !"); resetForm(); loadNewsAdmin();
+            } catch (e) {showAlertModal('warning', "Erreur technique.");} finally {btn.disabled = false; btn.innerText = id ? "Mettre à jour" : "Publier";}
         }
     </script>
 </body>
