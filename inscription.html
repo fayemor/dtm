@@ -44,30 +44,22 @@
 
 <body>
 
-    <div id="notificationWrapper"
-        class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[100] pointer-events-none select-none w-full max-w-sm px-4 flex flex-col items-center gap-2">
-
-        <div id="successPopup"
-            class="bg-green-600/95 backdrop-blur-md text-white pl-4 pr-8 py-3 rounded-full shadow-2xl flex items-center space-x-4 transition-all duration-500 ease-out transform -translate-y-[250%] opacity-0 border border-green-500/50 w-auto">
-            <div class="bg-white/20 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0"><i
-                    class="fa-solid fa-check text-xl font-bold"></i></div>
-            <div>
-                <h4 class="font-bold text-base leading-none mb-1">Succès !</h4>
-                <p id="successText" class="text-sm text-green-100 leading-none">Opération réussie.</p>
+    <!-- MODALE ALERTE (SUCCESS/ERROR) -->
+    <div id="alertModal"
+        class="fixed inset-0 z-[200] hidden flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity">
+        <div
+            class="bg-white rounded-3xl shadow-2xl p-8 max-w-xs w-full text-center transform scale-100 transition-transform relative">
+            <div id="alertIcon" class="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-sm">
+                <!-- Icone dynamique -->
             </div>
+            <h3 id="alertTitle" class="text-xl font-bold text-gray-800 mb-2">Message</h3>
+            <p id="alertMessage" class="text-gray-500 text-sm mb-6 leading-relaxed">Corps du message.</p>
+            <button onclick="document.getElementById('alertModal').classList.add('hidden')"
+                class="w-full px-6 py-2.5 rounded-xl bg-dtm-primary text-white font-bold hover:bg-blue-600 transition-colors">OK</button>
         </div>
-
-        <div id="errorPopup"
-            class="bg-red-600/95 backdrop-blur-md text-white pl-4 pr-8 py-3 rounded-full shadow-2xl flex items-center space-x-4 transition-all duration-500 ease-out transform -translate-y-[250%] opacity-0 border border-red-500/50 w-auto absolute">
-            <div class="bg-white/20 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0"><i
-                    class="fa-solid fa-xmark text-xl font-bold"></i></div>
-            <div>
-                <h4 class="font-bold text-base leading-none mb-1">Attention !</h4>
-                <p id="errorText" class="text-sm text-red-100 leading-none">Une erreur est survenue.</p>
-            </div>
-        </div>
-
     </div>
+
+
     <div class="glass-overlay py-12 px-4">
         <div
             class="w-full max-w-4xl bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-white/50 fade-in relative my-10 backdrop-blur-sm">
@@ -240,39 +232,52 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- 1. NOTIFICATION SUCCÈS (VERT) ---
-        function showSuccessNotification(message) {
-            const popup = document.getElementById('successPopup');
-            document.getElementById('successText').innerText = message;
-            popup.classList.remove('-translate-y-[250%]', 'opacity-0');
-            popup.classList.add('translate-y-0', 'opacity-100', 'scale-105');
-            setTimeout(() => {popup.classList.remove('scale-105');}, 200);
-        }
+        // --- FONCTION MODALE ALERTE (Pour remplacer les popups) ---
+        function showAlertModal(type, message, redirect = false) {
+            const modal = document.getElementById('alertModal');
+            const iconDiv = document.getElementById('alertIcon');
+            const title = document.getElementById('alertTitle');
+            const msg = document.getElementById('alertMessage');
+            const button = modal.querySelector('button');
 
-        // --- 2. NOTIFICATION ERREUR (ROUGE) ---
-        function showErrorNotification(message) {
-            const popup = document.getElementById('errorPopup');
-            document.getElementById('errorText').innerText = message;
-            popup.classList.remove('-translate-y-[250%]', 'opacity-0');
-            popup.classList.add('translate-y-0', 'opacity-100', 'scale-105');
+            iconDiv.className = 'mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-sm';
 
-            setTimeout(() => {popup.classList.remove('scale-105');}, 200);
+            if (type === 'success') {
+                iconDiv.classList.add('bg-green-100', 'text-green-600');
+                iconDiv.innerHTML = '<i class="fa-solid fa-check-circle text-3xl"></i>';
+                title.innerText = "Succès !";
+                button.innerText = "Se connecter";
+            } else { // Error/Warning
+                iconDiv.classList.add('bg-red-100', 'text-red-600');
+                iconDiv.innerHTML = '<i class="fa-solid fa-exclamation-triangle text-3xl"></i>';
+                title.innerText = "Erreur";
+                button.innerText = "Réessayer";
+            }
 
-            // Disparait automatiquement après 4 secondes
-            setTimeout(() => {
-                popup.classList.remove('translate-y-0', 'opacity-100');
-                popup.classList.add('-translate-y-[250%]', 'opacity-0');
-            }, 4000);
+            msg.innerText = message;
+            modal.classList.remove('hidden');
+
+            if (redirect) {
+                // Redirection vers la page de connexion après succès
+                button.onclick = () => {
+                    window.location.href = "connexion.html";
+                };
+            } else {
+                // Ferme la modale en cas d'erreur ou d'avertissement
+                button.onclick = () => {
+                    modal.classList.add('hidden');
+                };
+            }
         }
 
         window.previewImage = function (input) {
             if (input.files && input.files[0]) {
-                // VÉRIFICATION TAILLE (Avant preview)
                 const file = input.files[0];
-                // 1 Mo = 1,000,000 octets environ
-                if (file.size > 1000000) {
-                    showErrorNotification("La photo est trop lourde ! Choisir une autre.");
-                    input.value = ""; // Annuler la sélection
+                if (file.size > 1000000) { // Max 1 MB
+                    showAlertModal("error", "La photo est trop lourde ! (Max 1 Mo)");
+                    input.value = "";
+                    document.getElementById('preview').classList.add('hidden');
+                    document.getElementById('placeholder').classList.remove('hidden');
                     return;
                 }
 
@@ -297,15 +302,14 @@
             const file = photoInput.files[0];
 
             if (!file) {
-                showErrorNotification("Photo obligatoire !");
+                showAlertModal("error", "Veuillez ajouter une photo de profil.");
                 submitBtn.disabled = false;
                 submitBtn.innerText = originalText;
                 return;
             }
 
-            // DOUBLE VÉRIFICATION TAILLE
             if (file.size > 1000000) {
-                showErrorNotification("La photo est trop lourde ! (Max 1 Mo)");
+                showAlertModal("error", "La photo est trop lourde ! (Max 1 Mo)");
                 submitBtn.disabled = false;
                 submitBtn.innerText = originalText;
                 return;
@@ -324,7 +328,7 @@
                     const qs = await getDocs(q);
 
                     if (!qs.empty) {
-                        showErrorNotification("Cet email est déjà inscrit !");
+                        showAlertModal("error", "Cet email est déjà inscrit !");
                         submitBtn.innerText = originalText;
                         submitBtn.disabled = false;
                         return;
@@ -346,7 +350,6 @@
                         statut_dahira: document.getElementById('statut_dahira').value,
                         statut_pro: document.getElementById('statut_pro').value,
 
-                        // Ces champs ont été supprimés/modifiés, on garde pour la base
                         universite: "UGB",
 
                         niveau: document.getElementById('niveau').value,
@@ -358,21 +361,21 @@
 
                         password: document.getElementById('password').value,
                         photo: reader.result,
-                        date: new Date().toLocaleDateString()
+                        date: new Date().toLocaleDateString(),
+
+                        // Nouveau champ pour la gestion de la cotisation
+                        cotisationPayee: false,
+                        cotisationExpiration: null
                     };
 
                     await addDoc(collection(db, "membres"), newUser);
 
-                    showSuccessNotification("Inscription réussie ! Redirection...");
-
-                    setTimeout(() => {
-                        window.location.href = "connexion.html";
-                    }, 2000);
+                    showAlertModal("success", "Inscription réussie ! Vous pouvez maintenant vous connecter.", true);
 
                 } catch (error) {
                     console.error("Erreur: ", error);
-                    // On utilise la notif rouge pour les erreurs techniques aussi
-                    showErrorNotification("Erreur technique : " + error.message);
+                    showAlertModal("error", "Erreur technique lors de l'inscription : " + error.message);
+
                     submitBtn.innerText = originalText;
                     submitBtn.disabled = false;
                 }
