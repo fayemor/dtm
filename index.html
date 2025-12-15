@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accueil - DTM UGB</title>
 
+    <!-- Design & Police -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
@@ -19,14 +20,10 @@
                     fontFamily: {sans: ['Montserrat', 'sans-serif']},
                     animation: {
                         'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
-                        'breath': 'breath 3s ease-in-out infinite', // Nouvelle animation pour le logo
+                        // Suppression de l'animation 'breath'
                     },
                     keyframes: {
                         fadeInUp: {'0%': {opacity: '0', transform: 'translateY(20px)'}, '100%': {opacity: '1', transform: 'translateY(0)'}},
-                        breath: { // Keyframes pour l'effet zoom-dézoom
-                            '0%, 100%': {transform: 'scale(1)'},
-                            '50%': {transform: 'scale(1.08)'},
-                        }
                     }
                 }
             }
@@ -34,7 +31,8 @@
     </script>
     <style>
         body {
-            background-color: #f8fafc;
+            background-color: #f0f4f8;
+            /* Fond très léger */
         }
 
         .hero-bg {
@@ -46,55 +44,77 @@
         }
 
         .blue-overlay {
-            background: linear-gradient(to bottom, rgba(2, 132, 199, 0.85), rgba(12, 74, 110, 0.95));
+            background: linear-gradient(to bottom, rgba(2, 132, 199, 0.9), rgba(12, 74, 110, 0.98));
+            /* Opacité augmentée */
             position: absolute;
             inset: 0;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 4px;
+            background-color: #0284c7;
+            margin: 8px auto 0;
+            border-radius: 2px;
         }
     </style>
 </head>
 
 <body>
 
-    <div id="notificationWrapper"
-        class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[100] pointer-events-none select-none">
-        <div id="warningPopup"
-            class="bg-orange-500/95 backdrop-blur-md text-white pl-4 pr-8 py-3 rounded-full shadow-2xl flex items-center space-x-4 transition-all duration-500 ease-out transform -translate-y-[250%] opacity-0 border border-orange-400/50">
-            <div class="bg-white/20 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0"><i
-                    class="fa-solid fa-lock text-xl font-bold"></i></div>
-            <div>
-                <h4 class="font-bold text-base leading-none mb-1">Accès restreint</h4>
-                <p id="warningText" class="text-sm text-orange-50 leading-none">Veuillez vous connecter d'abord.</p>
+    <!-- MODALE ALERTE (SUCCESS/WARNING) -->
+    <div id="alertModal"
+        class="fixed inset-0 z-[200] hidden flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity">
+        <div
+            class="bg-white rounded-xl shadow-2xl p-8 max-w-xs w-full text-center transform scale-100 transition-transform relative">
+            <div id="alertIcon" class="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-sm">
+                <!-- Icone dynamique -->
             </div>
+            <h3 id="alertTitle" class="text-xl font-bold text-gray-800 mb-2">Message</h3>
+            <p id="alertMessage" class="text-gray-500 text-sm mb-6 leading-relaxed">Corps du message.</p>
+            <button onclick="document.getElementById('alertModal').classList.add('hidden')"
+                class="w-full px-6 py-2.5 rounded-xl bg-dtm-primary text-white font-bold hover:bg-blue-600 transition-colors">OK</button>
         </div>
     </div>
+    <!-- FIN MODALE ALERTE -->
 
-    <nav class="fixed w-full z-50 top-0 start-0 bg-white/95 backdrop-blur-md border-b shadow-sm transition-all">
-        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-2">
 
+    <nav class="fixed w-full z-50 top-0 start-0 bg-white/95 backdrop-blur-md border-b shadow-lg transition-all">
+        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-3">
+
+            <!-- LOGO NAV -->
             <a href="index.html" class="flex items-center space-x-3 group">
-                <img src="logo.png" class="h-14 md:h-20 w-auto transition-transform group-hover:scale-105"
-                    alt="DTM Logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1034/1034179.png'">
-                <span class="self-center text-xl md:text-2xl font-bold text-dtm-dark hidden sm:block">DTM UGB</span>
+                <img src="logo.png"
+                    class="h-14 w-auto transition-transform group-hover:scale-105 rounded-full shadow-md" alt="DTM Logo"
+                    onerror="this.src='https://placehold.co/50x50/0284c7/ffffff?text=DTM'">
+                <span class="self-center text-xl md:text-2xl font-extrabold text-dtm-dark hidden sm:block">DTM
+                    UGB</span>
             </a>
 
             <div class="flex md:order-2 items-center gap-4 md:gap-3">
 
-                <div class="flex items-center gap-5 md:hidden">
-                    <a href="#about" class="text-gray-500 hover:text-dtm-primary transition-colors">
+                <!-- ICONES MOBILES -->
+                <div class="flex items-center gap-4 md:hidden">
+                    <a href="#about" class="text-gray-600 hover:text-dtm-primary transition-colors"
+                        aria-label="À propos">
                         <i class="fa-solid fa-circle-info text-2xl"></i>
                     </a>
-                    <a href="#news" class="text-gray-500 hover:text-dtm-primary transition-colors">
+                    <a href="#news" class="text-gray-600 hover:text-dtm-primary transition-colors"
+                        aria-label="Actualités">
                         <i class="fa-solid fa-newspaper text-2xl"></i>
                     </a>
                 </div>
 
                 <a href="admin.html"
-                    class="hidden md:flex text-gray-500 hover:text-dtm-dark font-medium text-sm px-3 py-2 transition-colors items-center">
+                    class="hidden md:flex text-gray-600 hover:text-dtm-dark font-medium text-sm px-3 py-2 transition-colors items-center">
                     <i class="fa-solid fa-user-shield mr-2"></i> Admin
                 </a>
 
                 <button onclick="document.getElementById('navbar').classList.toggle('hidden')"
-                    class="md:hidden p-2 text-gray-500 rounded-lg hover:bg-gray-100 focus:ring-2 focus:ring-gray-200">
+                    class="md:hidden p-2 text-gray-600 rounded-lg hover:bg-gray-100 focus:ring-2 focus:ring-gray-200"
+                    aria-label="Menu">
                     <i class="fa-solid fa-bars text-2xl"></i>
                 </button>
             </div>
@@ -137,41 +157,48 @@
         </div>
     </nav>
 
-    <header class="hero-bg min-h-[95vh] flex items-center justify-center pt-20 pb-16 px-4 relative">
+    <!-- 1. HERO SECTION (Améliorée) -->
+    <header class="hero-bg min-h-screen flex items-center justify-center pt-20 pb-16 px-4 relative">
         <div class="blue-overlay"></div>
         <div class="text-center max-w-4xl relative z-10 text-white animate-fade-in-up">
-            <h1 class="text-4xl md:text-7xl font-extrabold mb-6 tracking-tight leading-tight drop-shadow-lg">
-                Dahira Touba <br><span class="text-blue-200">Médecine</span>
+
+            <h1 class="text-5xl md:text-8xl font-extrabold mb-6 tracking-tight leading-tight drop-shadow-xl">
+                Dahira Touba Medecine <br><span class="text-blue-200">UGB</span>
             </h1>
-            <p class="text-lg md:text-xl text-blue-50 mb-10 font-medium max-w-2xl mx-auto drop-shadow-md">
-                Université Gaston Berger de Saint-Louis.<br>
-                <span class="font-bold text-white">Union, Solidarité et Excellence</span> au service de la communauté
-                estudiantine et médicale.
+            <h2 class="text-xl md:text-2xl font-semibold mb-10 drop-shadow-md">
+                Dahira Touba Médecine, Université Gaston Berger de Saint-Louis.
+            </h2>
+            <p class="text-lg text-blue-50 mb-12 max-w-2xl mx-auto">
+                Union, Solidarité et Excellence au service de la communauté estudiantine et médicale.
             </p>
 
-            <div class="flex flex-col sm:flex-row justify-center gap-4 md:gap-6 w-full max-w-md mx-auto md:max-w-none">
+            <div class="flex flex-col sm:flex-row justify-center gap-4 md:gap-6 w-full max-w-md mx-auto md:max-w-lg">
                 <a href="inscription.html"
-                    class="px-8 py-4 bg-white text-dtm-primary hover:bg-blue-50 text-lg font-bold rounded-full shadow-xl transition-transform hover:scale-105 flex items-center justify-center">
-                    <i class="fa-solid fa-user-plus mr-2"></i> Devenir Membre
+                    class="px-8 py-4 bg-white text-dtm-primary font-bold rounded-full shadow-lg hover:shadow-xl transition-transform hover:scale-[1.02] flex items-center justify-center border border-transparent hover:border-dtm-primary">
+                    <i class="fa-solid fa-user-plus mr-2"></i> Adhérer
                 </a>
                 <a href="connexion.html"
-                    class="px-8 py-4 bg-transparent border-2 border-white text-white hover:bg-white/10 text-lg font-bold rounded-full shadow-xl transition-transform hover:scale-105 flex items-center justify-center">
+                    class="px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-full shadow-lg transition-transform hover:scale-[1.02] flex items-center justify-center hover:bg-white/10">
                     <i class="fa-solid fa-right-to-bracket mr-2"></i> Se connecter
                 </a>
             </div>
 
-            <a href="#about"
-                class="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-white/80 hover:text-white transition-colors animate-bounce hidden md:block">
-                <i class="fa-solid fa-chevron-down text-3xl drop-shadow-md"></i>
-            </a>
+            <!-- FLECHE DE DEFILEMENT (SCROLL DOWN) -->
+            <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+                <a href="#about" class="text-white/80 hover:text-white transition-colors"
+                    aria-label="Défiler vers le bas">
+                    <i class="fa-solid fa-chevron-down text-3xl drop-shadow-md"></i>
+                </a>
+            </div>
         </div>
     </header>
 
+    <!-- 2. SECTION A PROPOS (Améliorée) -->
     <section id="about" class="py-20 bg-white">
         <div class="max-w-6xl mx-auto px-6">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-dtm-dark uppercase tracking-wide">Qui sommes-nous ?</h2>
-                <div class="w-20 h-1 bg-dtm-primary mx-auto mt-2 rounded-full"></div>
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-dtm-dark uppercase tracking-wide section-title">Qui sommes-nous ?
+                </h2>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -182,39 +209,36 @@
                         Guidés par les enseignements de Cheikh Ahmadou Bamba, nous œuvrons pour l'excellence académique
                         et l'entraide sociale.
                     </p>
-                    <ul class="space-y-3 text-gray-700 mb-8">
-                        <li class="flex items-center"><i class="fa-solid fa-check-circle text-dtm-primary mr-3"></i>
-                            Accompagnement pédagogique</li>
-                        <li class="flex items-center"><i class="fa-solid fa-check-circle text-dtm-primary mr-3"></i>
-                            Actions sociales et médicales</li>
-                        <li class="flex items-center"><i class="fa-solid fa-check-circle text-dtm-primary mr-3"></i>
-                            Activités culturelles et religieuses</li>
+                    <ul class="space-y-3 text-gray-700 mb-8 p-4 bg-dtm-light/50 rounded-lg border border-dtm-light">
+                        <li class="flex items-center font-medium"><i class="fa-solid fa-star text-dtm-primary mr-3"></i>
+                            Relever les défis académiques et moraux.</li>
+                        <li class="flex items-center font-medium"><i class="fa-solid fa-star text-dtm-primary mr-3"></i>
+                            Organiser des actions sociales et médicales.</li>
+                        <li class="flex items-center font-medium"><i class="fa-solid fa-star text-dtm-primary mr-3"></i>
+                            Faire rayonner les valeurs du Mouridisme à l'UGB.</li>
                     </ul>
                     <a href="apropos.html"
-                        class="inline-block border-2 border-dtm-dark text-dtm-dark hover:bg-dtm-dark hover:text-white font-bold py-3 px-8 rounded-full transition-all">
-                        En savoir plus
+                        class="inline-block border-2 border-dtm-primary text-dtm-primary hover:bg-dtm-primary hover:text-white font-bold py-3 px-8 rounded-full transition-all shadow-md">
+                        En savoir plus sur nos missions
                     </a>
                 </div>
                 <div class="order-1 md:order-2 flex justify-center">
                     <div
-                        class="relative w-full max-w-sm aspect-square bg-dtm-light rounded-full flex items-center justify-center p-8 shadow-inner">
-                        <img src="logo.png" class="w-3/4 h-auto drop-shadow-2xl animate-breath"
-                            onerror="this.src='https://cdn-icons-png.flaticon.com/512/1034/1034179.png'">
+                        class="relative w-full max-w-sm aspect-square bg-dtm-light rounded-full flex items-center justify-center p-8 shadow-2xl">
+                        <img src="logo.png" class="w-3/4 h-auto drop-shadow-2xl"
+                            onerror="this.src='https://placehold.co/200x200/e0f2fe/0c4a6e?text=DTM+UGB'" alt="Logo DTM">
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- 3. SECTION ACTUALITÉS (Améliorée) -->
     <section id="news" class="py-20 bg-gray-50 border-t border-gray-100">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="flex justify-between items-end mb-12">
-                <div>
-                    <h2 class="text-3xl font-bold text-dtm-dark uppercase tracking-wide">Actualités</h2>
-                    <div class="w-20 h-1 bg-dtm-primary mt-2 rounded-full"></div>
-                </div>
-                <a href="actualites.html" class="text-dtm-primary font-bold hover:underline hidden sm:block">Voir tout
-                    <i class="fa-solid fa-arrow-right ml-1"></i></a>
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-dtm-dark uppercase tracking-wide section-title">Dernières Actualités
+                </h2>
             </div>
 
             <div id="homeNewsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -223,10 +247,11 @@
                 </div>
             </div>
 
-            <div class="text-center mt-10 sm:hidden">
+            <div class="text-center mt-12">
                 <a href="actualites.html"
-                    class="inline-block bg-dtm-light text-dtm-dark font-bold py-3 px-8 rounded-full">Voir toutes les
-                    actualités</a>
+                    class="inline-block bg-dtm-primary text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-dtm-dark transition-colors">
+                    Voir toutes les actualités
+                </a>
             </div>
         </div>
     </section>
@@ -251,9 +276,49 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // --- FONCTION MODALE ALERTE (Pour remplacer le popup) ---
+        function showAlertModal(type, message, redirect = false) {
+            const modal = document.getElementById('alertModal');
+            const iconDiv = modal.querySelector('#alertIcon');
+            const title = modal.querySelector('#alertTitle');
+            const msg = modal.querySelector('#alertMessage');
+            const button = modal.querySelector('button');
+
+            iconDiv.className = 'mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4 shadow-sm';
+
+            if (type === 'success') {
+                iconDiv.classList.add('bg-green-100', 'text-green-600');
+                iconDiv.innerHTML = '<i class="fa-solid fa-check-circle text-3xl"></i>';
+                title.innerText = "Succès !";
+                button.innerText = "OK";
+            } else { // Warning (Accès restreint)
+                iconDiv.classList.add('bg-orange-100', 'text-orange-600');
+                iconDiv.innerHTML = '<i class="fa-solid fa-lock text-3xl"></i>';
+                title.innerText = "Accès Restreint";
+                button.innerText = "Se connecter";
+            }
+
+            msg.innerText = message;
+            modal.classList.remove('hidden');
+
+            if (redirect) {
+                // Redirection vers la page de connexion après le clic
+                button.onclick = () => {
+                    window.location.href = "connexion.html";
+                };
+            } else {
+                // Ferme la modale
+                button.onclick = () => {
+                    modal.classList.add('hidden');
+                };
+            }
+        }
+
+
         async function loadHomeNews() {
             const container = document.getElementById('homeNewsContainer');
             try {
+                // Tri par date pour avoir les 3 derniers
                 const q = query(collection(db, "actualites"), limit(3));
                 const querySnapshot = await getDocs(q);
 
@@ -269,7 +334,7 @@
                     const imgUrl = item.image || 'https://placehold.co/600x400?text=DTM';
 
                     container.innerHTML += `
-                        <a href="actualites.html?id=${doc.id}" class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group block h-full flex flex-col">
+                        <a href="actualites.html?id=${doc.id}" class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group block h-full flex flex-col">
                             <div class="h-48 overflow-hidden relative bg-gray-200">
                                 <img src="${imgUrl}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy">
                                 <span class="absolute bottom-2 left-2 bg-black/60 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-sm">${item.categorie || 'Info'}</span>
@@ -286,7 +351,8 @@
 
             } catch (error) {
                 console.error("Erreur news home:", error);
-                container.innerHTML = `<div class="col-span-full text-center text-red-400 text-sm">Impossible de charger les actualités.</div>`;
+                // Utiliser la modale pour afficher l'erreur de chargement
+                showAlertModal("error", "Une erreur est survenue lors du chargement des actualités.");
             }
         }
 
@@ -294,12 +360,12 @@
             const user = localStorage.getItem('dtm_currentUser');
             if (user) {window.location.href = "dashboard.html";}
             else {
-                const popup = document.getElementById('warningPopup');
-                const text = document.getElementById('warningText');
-                text.innerText = "Veuillez vous connecter pour accéder à votre espace.";
-                popup.classList.remove('-translate-y-[250%]', 'opacity-0'); popup.classList.add('translate-y-0', 'opacity-100');
-                setTimeout(() => {popup.classList.remove('translate-y-0', 'opacity-100'); popup.classList.add('-translate-y-[250%]', 'opacity-0');}, 3000);
-                setTimeout(() => {window.location.href = "connexion.html";}, 2000);
+                // Afficher la modale d'avertissement et rediriger après confirmation
+                showAlertModal(
+                    "warning",
+                    "Pour accéder à votre profil et carte de membre, vous devez vous connecter.",
+                    true // Indique la redirection
+                );
             }
         }
 
