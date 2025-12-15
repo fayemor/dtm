@@ -350,7 +350,7 @@
             modal.classList.remove('hidden');
         }
         function showNotification(type, message) {showAlertModal(type, message);}
-        function showConfirmModal(message, confirmText = "Supprimer") {
+        function showConfirmModal(message, confirmText = "Valider") {
             const modal = document.getElementById('confirmModal');
             document.getElementById('confirmMessage').innerText = message;
             document.getElementById('confirmBtnAction').innerText = confirmText;
@@ -586,7 +586,7 @@
 
         async function shareNewsAdmin(id, title) {
             const shareUrl = window.location.href.replace('admin.html', 'actualites.html') + '?id=' + id;
-            const shareData = {title: 'DTM UGB - Actualité', text: 'Regarde ça : ' + title, url: shareUrl};
+            const shareData = {title: 'Actualité Dahira Touba Medecine', text: 'Regarde ça : ' + title, url: shareUrl};
             if (navigator.share) {try {await navigator.share(shareData);} catch (err) { } } else {navigator.clipboard.writeText(shareUrl).then(() => {showAlertModal('success', "Lien copié !");});}
         }
 
