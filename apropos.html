@@ -13,8 +13,8 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { dtm: { light: '#e0f2fe', primary: '#0284c7', dark: '#0c4a6e' } },
-                    fontFamily: { sans: ['Montserrat', 'sans-serif'] }
+                    colors: {dtm: {light: '#e0f2fe', primary: '#0284c7', dark: '#0c4a6e'}},
+                    fontFamily: {sans: ['Montserrat', 'sans-serif']}
                 }
             }
         } 
@@ -132,22 +132,32 @@
     </div>
 
     <!-- ANCHOR MENU FLOTTANT -->
-    <div id="anchorMenu" class="space-y-3 bg-white/70 backdrop-blur-sm p-3 rounded-full shadow-lg border border-gray-100">
-        <a href="#intro" class="block w-10 h-10 bg-dtm-primary/80 hover:bg-dtm-primary rounded-full text-white flex items-center justify-center text-lg transition-colors shadow-md" title="Objectifs"><i class="fa-solid fa-bullseye"></i></a>
-        <a href="#histoire-section" class="block w-10 h-10 bg-dtm-primary/80 hover:bg-dtm-primary rounded-full text-white flex items-center justify-center text-lg transition-colors shadow-md" title="Histoire"><i class="fa-solid fa-book-reader"></i></a>
-        <a href="#activites-section" class="block w-10 h-10 bg-dtm-primary/80 hover:bg-dtm-primary rounded-full text-white flex items-center justify-center text-lg transition-colors shadow-md" title="Activités"><i class="fa-solid fa-calendar-alt"></i></a>
-        <a href="#engagement-section" class="block w-10 h-10 bg-dtm-primary/80 hover:bg-dtm-primary rounded-full text-white flex items-center justify-center text-lg transition-colors shadow-md" title="Contact"><i class="fa-solid fa-headset"></i></a>
+    <div id="anchorMenu"
+        class="space-y-3 bg-white/70 backdrop-blur-sm p-3 rounded-full shadow-lg border border-gray-100">
+        <a href="#intro"
+            class="block w-10 h-10 bg-dtm-primary/80 hover:bg-dtm-primary rounded-full text-white flex items-center justify-center text-lg transition-colors shadow-md"
+            title="Objectifs"><i class="fa-solid fa-bullseye"></i></a>
+        <a href="#histoire-section"
+            class="block w-10 h-10 bg-dtm-primary/80 hover:bg-dtm-primary rounded-full text-white flex items-center justify-center text-lg transition-colors shadow-md"
+            title="Histoire"><i class="fa-solid fa-book-reader"></i></a>
+        <a href="#activites-section"
+            class="block w-10 h-10 bg-dtm-primary/80 hover:bg-dtm-primary rounded-full text-white flex items-center justify-center text-lg transition-colors shadow-md"
+            title="Activités"><i class="fa-solid fa-calendar-alt"></i></a>
+        <a href="#engagement-section"
+            class="block w-10 h-10 bg-dtm-primary/80 hover:bg-dtm-primary rounded-full text-white flex items-center justify-center text-lg transition-colors shadow-md"
+            title="Contact"><i class="fa-solid fa-headset"></i></a>
     </div>
 
     <div class="glass-overlay">
         <nav class="fixed w-full z-50 top-0 start-0 bg-white/95 backdrop-blur-md border-b shadow-md">
             <div class="max-w-screen-xl flex items-center justify-between mx-auto px-4 py-2">
                 <a href="index.html" class="flex items-center space-x-3 group">
-                    <img src="logo.png" class="h-14 md:h-20 w-auto transition-transform group-hover:scale-105" alt="DTM Logo"
-                        onerror="this.src='https://cdn-icons-png.flaticon.com/512/1034/1034179.png'">
+                    <img src="logo.png" class="h-14 md:h-20 w-auto transition-transform group-hover:scale-105"
+                        alt="DTM Logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1034/1034179.png'">
                     <span class="self-center text-2xl font-extrabold text-dtm-dark hidden sm:block">DTM UGB</span>
                 </a>
-                <a href="index.html" class="text-dtm-primary font-bold hover:underline py-2 px-4 rounded-full hover:bg-dtm-light transition-colors"><i
+                <a href="index.html"
+                    class="text-dtm-primary font-bold hover:underline py-2 px-4 rounded-full hover:bg-dtm-light transition-colors"><i
                         class="fa-solid fa-arrow-left mr-2"></i>Retour à l'accueil</a>
             </div>
         </nav>
@@ -157,34 +167,42 @@
             <!-- 1. SECTION INTRO & OBJECTIFS -->
             <section class="mb-24" id="intro">
                 <div class="text-center animate-on-scroll">
-                    <h1 class="text-5xl md:text-6xl font-extrabold text-dtm-dark mb-4 tracking-tight">Le Dahira Touba Médecine</h1>
+                    <h1 class="text-5xl md:text-6xl font-extrabold text-dtm-dark mb-4 tracking-tight">Le Dahira Touba
+                        Médecine</h1>
                     <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-medium">
-                        Le <span class="font-bold text-dtm-primary">DTM</span> : Un creuset d'excellence au service de la foi et de la santé.
+                        Le <span class="font-bold text-dtm-primary">DTM</span> : Un creuset d'excellence au service de
+                        la foi et de la santé.
                     </p>
                 </div>
-                
+
                 <!-- Piliers résumés -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
                     <div class="activity-card animate-on-scroll" style="transition-delay: 0.2s;">
-                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-dtm-primary text-3xl">
+                        <div
+                            class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-dtm-primary text-3xl">
                             <i class="fa-solid fa-hands-holding-child"></i>
                         </div>
                         <h3 class="font-bold text-xl mb-2 text-gray-800">Engagement Social</h3>
-                        <p class="text-sm text-gray-500">Service communautaire, dons et consultations gratuites au service des populations et des Daaras.</p>
+                        <p class="text-sm text-gray-500">Service communautaire, dons et consultations gratuites au
+                            service des populations et des Daaras.</p>
                     </div>
                     <div class="activity-card animate-on-scroll" style="transition-delay: 0.3s;">
-                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-green-600 text-3xl">
+                        <div
+                            class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-green-600 text-3xl">
                             <i class="fa-solid fa-book-open-reader"></i>
                         </div>
                         <h3 class="font-bold text-xl mb-2 text-gray-800">Excellence Académique</h3>
-                        <p class="text-sm text-gray-500">Encadrement pédagogique via des tutorats et fascicules pour la réussite des étudiants en santé.</p>
+                        <p class="text-sm text-gray-500">Encadrement pédagogique via des tutorats et fascicules pour la
+                            réussite des étudiants en santé.</p>
                     </div>
                     <div class="activity-card animate-on-scroll" style="transition-delay: 0.4s;">
-                        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 text-orange-600 text-3xl">
+                        <div
+                            class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 text-orange-600 text-3xl">
                             <i class="fa-solid fa-mosque"></i>
                         </div>
                         <h3 class="font-bold text-xl mb-2 text-gray-800">Formation Spirituelle</h3>
-                        <p class="text-sm text-gray-500">Consolidation de l'identité mouride à travers les valeurs de discipline et de droiture.</p>
+                        <p class="text-sm text-gray-500">Consolidation de l'identité mouride à travers les valeurs de
+                            discipline et de droiture.</p>
                     </div>
                 </div>
             </section>
@@ -195,39 +213,59 @@
             <section class="section-bg bg-history rounded-3xl shadow-2xl overflow-hidden mb-20" id="histoire-section">
                 <div class="overlay-light rounded-3xl p-8 md:p-16">
                     <div class="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
-                        <h2 class="text-3xl md:text-4xl font-extrabold text-dtm-dark text-center md:text-left animate-on-scroll">Notre Histoire</h2>
-                        
+                        <h2
+                            class="text-3xl md:text-4xl font-extrabold text-dtm-dark text-center md:text-left animate-on-scroll">
+                            Notre Histoire</h2>
+
                         <!-- BOUTON TÉLÉCHARGER HISTORIQUE COMPLET -->
                         <!-- ⚠️ REMPLACEZ LE LIEN CI-DESSOUS PAR VOTRE LIEN GOOGLE DRIVE -->
-                        <a href="https://drive.google.com/VOTRE_LIEN_DRIVE_ICI" target="_blank" class="bg-dtm-dark text-white text-xs font-bold py-3 px-8 rounded-full shadow-lg hover:bg-dtm-primary transition-all animate-on-scroll flex items-center">
+                        <a href="https://drive.google.com/VOTRE_LIEN_DRIVE_ICI" target="_blank"
+                            class="bg-dtm-dark text-white text-xs font-bold py-3 px-8 rounded-full shadow-lg hover:bg-dtm-primary transition-all animate-on-scroll flex items-center">
                             <i class="fa-solid fa-file-pdf mr-2 text-lg"></i> Télécharger l'historique complet
                         </a>
                     </div>
-                    
+
                     <div class="history-text animate-on-scroll">
                         <p>
-                            Le Dahira Touba Médecine de l’Université Gaston Berger de Saint-Louis est une organisation d’étudiants mourides créée le 1ᵉʳ décembre 2019. Elle vise à concilier formation spirituelle et excellence académique, notamment dans le domaine médical, tout en respectant les valeurs du Mouridisme : discipline, engagement, service et droiture.
+                            Le Dahira Touba Médecine de l’Université Gaston Berger de Saint-Louis est une organisation
+                            d’étudiants mourides créée le 1ᵉʳ décembre 2019. Elle vise à concilier formation spirituelle
+                            et excellence académique, notamment dans le domaine médical, tout en respectant les valeurs
+                            du Mouridisme : discipline, engagement, service et droiture.
                         </p>
 
                         <!-- IMAGE 1 -->
-                        <img src="img1.jpg" alt="Fondation DTM" class="history-img" onerror="this.src='https://placehold.co/1000x600/0c4a6e/white?text=IMAGE+1+-+DÉBUTS'">
+                        <img src="img1.png" alt="Fondation DTM" class="history-img"
+                            onerror="this.src='https://placehold.co/1000x600/0c4a6e/white?text=IMAGE+1+-+DÉBUTS'">
 
                         <p>
-                            Né à la suite de SAFARs organisés lors des Magal de Touba 2017 et 2018, le Dahira s’est structuré autour d’un bureau et de plusieurs commissions (scientifique, financière, communication, sociale, conservatoire, organisation, discipline, culturelle), sous la direction du Dieuwrine Serigne Moussa Sarre.
+                            Né à la suite de SAFARs organisés lors des Magal de Touba 2017 et 2018, le Dahira s’est
+                            structuré autour d’un bureau et de plusieurs commissions (scientifique, financière,
+                            communication, sociale, conservatoire, organisation, discipline, culturelle), sous la
+                            direction du Dieuwrine Serigne Moussa Sarre.
                         </p>
 
                         <!-- IMAGE 2 -->
-                        <img src="img2.jpg" alt="Structure DTM" class="history-img" onerror="this.src='https://placehold.co/1000x600/0c4a6e/white?text=IMAGE+2+-+STRUCTURE'">
+                        <img src="img2.png" alt="Structure DTM" class="history-img"
+                            onerror="this.src='https://placehold.co/1000x600/0c4a6e/white?text=IMAGE+2+-+STRUCTURE'">
 
                         <p>
-                            Ses activités comprennent des rendez-vous hebdomadaires (Durus, Kureel, causeries religieuses et médicales, répétition du Kurel) ainsi que des événements annuels tels que les Journées Xassida et les journées de consultation médicale gratuite. Ces actions permettent de renforcer la spiritualité des membres, de former les étudiants au service communautaire et de consolider l’identité mouride au sein de l’université.
+                            Ses activités comprennent des rendez-vous hebdomadaires (Durus, Kureel, causeries
+                            religieuses et médicales, répétition du Kurel) ainsi que des événements annuels tels que les
+                            Journées Xassida et les journées de consultation médicale gratuite. Ces actions permettent
+                            de renforcer la spiritualité des membres, de former les étudiants au service communautaire
+                            et de consolider l’identité mouride au sein de l’université.
                         </p>
 
                         <!-- IMAGE 3 -->
-                        <img src="img3.jpg" alt="Activités DTM" class="history-img" onerror="this.src='https://placehold.co/1000x600/0c4a6e/white?text=IMAGE+3+-+ACTIVITÉS'">
+                        <img src="img3.png" alt="Activités DTM" class="history-img"
+                            onerror="this.src='https://placehold.co/1000x600/0c4a6e/white?text=IMAGE+3+-+ACTIVITÉS'">
 
                         <p>
-                            Le Dahira prévoit également des projets pédagogiques (tutorats, fascicules, blouses), administratifs (récépissé, siège social, cellule TAM) et médico-sociaux (consultations, dons, accompagnement des daaras), tout en maintenant des liens avec le Khalife général des Mourides. Le Dahira Touba Médecine œuvre pour l’élévation spirituelle, l’excellence académique et le service communautaire, incarnant les valeurs du Mouridisme.
+                            Le Dahira prévoit également des projets pédagogiques (tutorats, fascicules, blouses),
+                            administratifs (récépissé, siège social, cellule TAM) et médico-sociaux (consultations,
+                            dons, accompagnement des daaras), tout en maintenant des liens avec le Khalife général des
+                            Mourides. Le Dahira Touba Médecine œuvre pour l’élévation spirituelle, l’excellence
+                            académique et le service communautaire, incarnant les valeurs du Mouridisme.
                         </p>
                     </div>
                 </div>
@@ -238,38 +276,44 @@
             <!-- 3. SECTION ACTIVITÉS -->
             <section class="section-bg bg-activities rounded-3xl shadow-2xl mb-20" id="activites-section">
                 <div class="overlay-light rounded-3xl p-8 md:p-12">
-                    <h2 class="text-3xl font-extrabold text-dtm-dark mb-10 text-center animate-on-scroll">Activités Clés</h2>
+                    <h2 class="text-3xl font-extrabold text-dtm-dark mb-10 text-center animate-on-scroll">Activités Clés
+                    </h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="activity-card animate-on-scroll" style="transition-delay: 0.2s;">
                             <div class="text-dtm-primary mb-3"><i class="fa-solid fa-calendar-check text-2xl"></i></div>
                             <h3 class="font-bold text-xl mb-2 text-gray-800">Hebdomadaire</h3>
-                            <p class="text-sm text-gray-600">Durus, Kureel, causeries religieuses et médicales au Village J.</p>
+                            <p class="text-sm text-gray-600">Durus, Kureel, causeries religieuses et médicales au
+                                Village J.</p>
                         </div>
 
                         <div class="activity-card animate-on-scroll" style="transition-delay: 0.4s;">
                             <div class="text-green-600 mb-3"><i class="fa-solid fa-book-quran text-2xl"></i></div>
                             <h3 class="font-bold text-xl mb-2 text-gray-800">Journées Xassida</h3>
-                            <p class="text-sm text-gray-600">Un grand rendez-vous annuel dédié à l'étude des œuvres du Cheikh.</p>
+                            <p class="text-sm text-gray-600">Un grand rendez-vous annuel dédié à l'étude des œuvres du
+                                Cheikh.</p>
                         </div>
 
                         <div class="activity-card animate-on-scroll" style="transition-delay: 0.6s;">
                             <div class="text-orange-600 mb-3"><i class="fa-solid fa-stethoscope text-2xl"></i></div>
                             <h3 class="font-bold text-xl mb-2 text-gray-800">Médico-Social</h3>
-                            <p class="text-sm text-gray-600">Organisation de consultations gratuites et de dons de médicaments.</p>
+                            <p class="text-sm text-gray-600">Organisation de consultations gratuites et de dons de
+                                médicaments.</p>
                         </div>
                     </div>
                 </div>
             </section>
-            
+
             <hr class="border-gray-200 my-16">
 
             <!-- 4. LE MOT DU DIEUWRINE -->
-            <div class="bg-quote rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row animate-on-scroll" id="quote-section">
+            <div class="bg-quote rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row animate-on-scroll"
+                id="quote-section">
                 <div class="md:w-1/3 bg-dtm-dark relative">
                     <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop"
                         class="w-full h-full object-cover opacity-80 mix-blend-overlay">
-                    <div class="absolute bottom-0 left-0 p-6 text-white bg-gradient-to-t from-black/80 to-transparent w-full">
+                    <div
+                        class="absolute bottom-0 left-0 p-6 text-white bg-gradient-to-t from-black/80 to-transparent w-full">
                         <h3 class="text-xl font-bold">Serigne Moussa SARRE</h3>
                         <p class="text-sm opacity-90">Dieuwrine Moral du DTM</p>
                     </div>
@@ -278,33 +322,45 @@
                     <div class="mb-4 text-dtm-primary text-4xl"><i class="fa-solid fa-quote-left"></i></div>
                     <h2 class="text-2xl font-bold mb-4 uppercase tracking-tighter">Le Mot du Dieuwrine</h2>
                     <p class="text-gray-600 italic leading-relaxed mb-6 text-justify">
-                        "Chers condisciples, la quête du savoir médical est un acte d'adoration lorsqu'elle est mise au service de l'humanité. Notre Dahira se veut être ce creuset d'excellence où la science rencontre la vertu."
+                        "Chers condisciples, la quête du savoir médical est un acte d'adoration lorsqu'elle est mise au
+                        service de l'humanité. Notre Dahira se veut être ce creuset d'excellence où la science rencontre
+                        la vertu."
                     </p>
                     <div class="text-right font-bold">— Dieuwrine du Dahira Touba Médecine</div>
                 </div>
             </div>
-            
+
             <hr class="border-gray-200 my-16">
-            
+
             <!-- 5. CONTACT & LOCALISATION -->
             <section class="section-bg bg-engagement rounded-3xl shadow-2xl mb-20" id="engagement-section">
                 <div class="overlay-light rounded-3xl p-8 md:p-12">
-                    <h2 class="text-3xl font-extrabold text-dtm-dark mb-12 text-center animate-on-scroll">Nous Rejoindre</h2>
-                    
+                    <h2 class="text-3xl font-extrabold text-dtm-dark mb-12 text-center animate-on-scroll">Nous Rejoindre
+                    </h2>
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                         <div class="activity-card animate-on-scroll">
-                            <h3 class="text-xl font-extrabold text-dtm-dark mb-4"><i class="fa-solid fa-envelope mr-2"></i> Bureau Officiel</h3>
-                            <p class="text-gray-600 mb-6 text-sm">Pour toute question administrative ou proposition de partenariat.</p>
-                            <a href="mailto:dtm.ugb@gmail.com" class="inline-block bg-dtm-primary text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-dtm-dark transition-colors">
+                            <h3 class="text-xl font-extrabold text-dtm-dark mb-4"><i
+                                    class="fa-solid fa-envelope mr-2"></i> Bureau Officiel</h3>
+                            <p class="text-gray-600 mb-6 text-sm">Pour toute question administrative ou proposition de
+                                partenariat.</p>
+                            <a href="mailto:dtm.ugb@gmail.com"
+                                class="inline-block bg-dtm-primary text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-dtm-dark transition-colors">
                                 dtm.ugb@gmail.com
                             </a>
                         </div>
-                        
+
                         <div class="activity-card animate-on-scroll">
-                            <h3 class="text-xl font-extrabold text-dtm-dark mb-4"><i class="fa-solid fa-location-dot mr-2"></i> Notre Siège</h3>
-                            <p class="text-gray-600 mb-4 text-sm">Nous nous réunissons chaque samedi au Village J (UGB).</p>
-                            <div class="h-40 w-full bg-gray-100 rounded-xl overflow-hidden shadow-inner flex items-center justify-center">
-                                <iframe src="https://maps.google.com/maps?q=Universit%C3%A9%20Gaston%20Berger%20Saint-Louis&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                            <h3 class="text-xl font-extrabold text-dtm-dark mb-4"><i
+                                    class="fa-solid fa-location-dot mr-2"></i> Notre Siège</h3>
+                            <p class="text-gray-600 mb-4 text-sm">Nous nous réunissons chaque samedi au Village J (UGB).
+                            </p>
+                            <div
+                                class="h-40 w-full bg-gray-100 rounded-xl overflow-hidden shadow-inner flex items-center justify-center">
+                                <iframe
+                                    src="https://maps.google.com/maps?q=Universit%C3%A9%20Gaston%20Berger%20Saint-Louis&t=&z=13&ie=UTF8&iwloc=&output=embed"
+                                    width="100%" height="100%" style="border:0;" allowfullscreen=""
+                                    loading="lazy"></iframe>
                             </div>
                         </div>
                     </div>
@@ -312,7 +368,7 @@
             </section>
         </div>
     </div>
-    
+
     <footer class="bg-dtm-dark text-white py-8 text-center">
         <p class="text-sm opacity-80">© 2025 Dahira Touba Médecine UGB.</p>
     </footer>
@@ -322,7 +378,7 @@
             const loadingOverlay = document.getElementById('loadingOverlay');
             setTimeout(() => {
                 loadingOverlay.style.opacity = '0';
-                setTimeout(() => { loadingOverlay.style.display = 'none'; }, 500);
+                setTimeout(() => {loadingOverlay.style.display = 'none';}, 500);
             }, 500);
 
             const observer = new IntersectionObserver((entries) => {
@@ -332,11 +388,11 @@
                         observer.unobserve(entry.target);
                     }
                 });
-            }, { threshold: 0.1 });
+            }, {threshold: 0.1});
 
             document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
-            
-            window.onscroll = function() {
+
+            window.onscroll = function () {
                 const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
                 document.getElementById("scrollProgress").style.width = scrolled + "%";
             };
