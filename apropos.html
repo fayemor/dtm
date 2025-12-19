@@ -13,8 +13,8 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {dtm: {light: '#e0f2fe', primary: '#0284c7', dark: '#0c4a6e'}},
-                    fontFamily: {sans: ['Montserrat', 'sans-serif']}
+                    colors: { dtm: { light: '#e0f2fe', primary: '#0284c7', dark: '#0c4a6e' } },
+                    fontFamily: { sans: ['Montserrat', 'sans-serif'] }
                 }
             }
         } 
@@ -24,21 +24,17 @@
             background-color: #f8fafc;
         }
 
-        /* Styles généraux pour le fond */
         .glass-overlay {
             background-color: #fcfdfe;
-            /* Fond très clair */
             min-height: 100vh;
         }
 
-        /* Classe d'animation de base (invisible par défaut) */
         .animate-on-scroll {
             opacity: 0;
             transform: translateY(30px);
             transition: opacity 0.9s ease-out, transform 0.9s ease-out;
         }
 
-        /* Classe appliquée par JavaScript au moment du défilement */
         .fade-in {
             opacity: 1;
             transform: translateY(0);
@@ -48,34 +44,6 @@
             @apply bg-white p-6 rounded-3xl shadow-xl border border-gray-100 transition-transform duration-300 hover:shadow-2xl hover:-translate-y-1.5;
         }
 
-        /* Styles pour la timeline améliorée */
-        .timeline {
-            padding-left: 25px;
-            position: relative;
-        }
-
-        .timeline-item {
-            position: relative;
-            margin-bottom: 50px;
-        }
-
-        .timeline-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .timeline-dot {
-            position: absolute;
-            left: -30px;
-            top: 0;
-            width: 18px;
-            height: 18px;
-            background-color: #0c4a6e;
-            border: 5px solid #e0f2fe;
-            border-radius: 50%;
-            box-shadow: 0 0 0 2px #0284c7;
-        }
-
-        /* BACKGROUNDS POUR CHAQUE SECTION */
         .section-bg {
             background-size: cover;
             background-position: center;
@@ -100,12 +68,10 @@
             background-image: url('https://images.unsplash.com/photo-1560520037-7788ac4f283d?q=80&w=1920&auto=format&fit=crop');
         }
 
-        /* OVERLAYS pour garantir la lisibilité */
         .overlay-light {
             background-color: rgba(255, 255, 255, 0.95);
         }
 
-        /* SCROLL PROGRESS BAR */
         #scrollProgress {
             height: 4px;
             width: 0%;
@@ -115,7 +81,6 @@
             z-index: 50;
         }
 
-        /* LOADING SPINNER */
         #loadingOverlay {
             position: fixed;
             top: 0;
@@ -130,7 +95,6 @@
             transition: opacity 0.5s;
         }
 
-        /* ANCHOR MENU (Flottant sur le côté) */
         #anchorMenu {
             position: fixed;
             top: 50%;
@@ -145,12 +109,21 @@
                 display: block;
             }
         }
+
+        /* Styles spécifiques pour l'historique textuel */
+        .history-text p {
+            @apply mb-6 text-gray-700 leading-relaxed text-justify text-base md:text-lg;
+        }
+
+        .history-img {
+            @apply w-full h-64 md:h-96 object-cover rounded-3xl shadow-xl my-10 border-4 border-white transform transition-transform hover:scale-[1.01];
+        }
     </style>
 </head>
 
 <body>
 
-    <!-- BARRE DE PROGRESSION DE LECTURE (1) -->
+    <!-- BARRE DE PROGRESSION -->
     <div id="scrollProgress"></div>
 
     <!-- OVERLAY DE CHARGEMENT INITIAL -->
@@ -158,405 +131,220 @@
         <i class="fa-solid fa-spinner fa-spin text-4xl text-dtm-primary"></i>
     </div>
 
-    <!-- MODALE DE DONATION (RETIRÉE DU CONTENU ACTIF) -->
-    <!-- ANCHOR MENU (Flottant - 10) -->
-    <div id="anchorMenu"
-        class="space-y-3 bg-white/70 backdrop-blur-sm p-3 rounded-full shadow-lg border border-gray-100">
-        <a href="#intro"
-            class="block w-10 h-10 bg-dtm-primary/80 hover:bg-dtm-primary rounded-full text-white flex items-center justify-center text-lg transition-colors shadow-md"
-            title="Objectifs"><i class="fa-solid fa-bullseye"></i></a>
-        <a href="#histoire-section"
-            class="block w-10 h-10 bg-dtm-primary/80 hover:bg-dtm-primary rounded-full text-white flex items-center justify-center text-lg transition-colors shadow-md"
-            title="Histoire"><i class="fa-solid fa-book-reader"></i></a>
-        <a href="#activites-section"
-            class="block w-10 h-10 bg-dtm-primary/80 hover:bg-dtm-primary rounded-full text-white flex items-center justify-center text-lg transition-colors shadow-md"
-            title="Activités"><i class="fa-solid fa-calendar-alt"></i></a>
-        <a href="#engagement-section"
-            class="block w-10 h-10 bg-dtm-primary/80 hover:bg-dtm-primary rounded-full text-white flex items-center justify-center text-lg transition-colors shadow-md"
-            title="Contact"><i class="fa-solid fa-headset"></i></a>
+    <!-- ANCHOR MENU FLOTTANT -->
+    <div id="anchorMenu" class="space-y-3 bg-white/70 backdrop-blur-sm p-3 rounded-full shadow-lg border border-gray-100">
+        <a href="#intro" class="block w-10 h-10 bg-dtm-primary/80 hover:bg-dtm-primary rounded-full text-white flex items-center justify-center text-lg transition-colors shadow-md" title="Objectifs"><i class="fa-solid fa-bullseye"></i></a>
+        <a href="#histoire-section" class="block w-10 h-10 bg-dtm-primary/80 hover:bg-dtm-primary rounded-full text-white flex items-center justify-center text-lg transition-colors shadow-md" title="Histoire"><i class="fa-solid fa-book-reader"></i></a>
+        <a href="#activites-section" class="block w-10 h-10 bg-dtm-primary/80 hover:bg-dtm-primary rounded-full text-white flex items-center justify-center text-lg transition-colors shadow-md" title="Activités"><i class="fa-solid fa-calendar-alt"></i></a>
+        <a href="#engagement-section" class="block w-10 h-10 bg-dtm-primary/80 hover:bg-dtm-primary rounded-full text-white flex items-center justify-center text-lg transition-colors shadow-md" title="Contact"><i class="fa-solid fa-headset"></i></a>
     </div>
 
     <div class="glass-overlay">
         <nav class="fixed w-full z-50 top-0 start-0 bg-white/95 backdrop-blur-md border-b shadow-md">
             <div class="max-w-screen-xl flex items-center justify-between mx-auto px-4 py-2">
                 <a href="index.html" class="flex items-center space-x-3 group">
-                    <img src="logo.png" class="h-14 md:h-20 w-auto transition-transform group-hover:scale-105"
-                        alt="DTM Logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1034/1034179.png'">
+                    <img src="logo.png" class="h-14 md:h-20 w-auto transition-transform group-hover:scale-105" alt="DTM Logo"
+                        onerror="this.src='https://cdn-icons-png.flaticon.com/512/1034/1034179.png'">
                     <span class="self-center text-2xl font-extrabold text-dtm-dark hidden sm:block">DTM UGB</span>
                 </a>
-                <a href="index.html"
-                    class="text-dtm-primary font-bold hover:underline py-2 px-4 rounded-full hover:bg-dtm-light transition-colors"><i
+                <a href="index.html" class="text-dtm-primary font-bold hover:underline py-2 px-4 rounded-full hover:bg-dtm-light transition-colors"><i
                         class="fa-solid fa-arrow-left mr-2"></i>Retour à l'accueil</a>
             </div>
         </nav>
 
         <div class="pt-32 pb-16 px-4 max-w-5xl mx-auto">
 
-            <!-- 1. SECTION INTRO & OBJECTIFS & CHIFFRES CLÉS -->
+            <!-- 1. SECTION INTRO & OBJECTIFS -->
             <section class="mb-24" id="intro">
                 <div class="text-center animate-on-scroll">
-                    <h1 class="text-5xl md:text-6xl font-extrabold text-dtm-dark mb-4 tracking-tight">Le Dahira Touba
-                        Médecine</h1>
+                    <h1 class="text-5xl md:text-6xl font-extrabold text-dtm-dark mb-4 tracking-tight">Le Dahira Touba Médecine</h1>
                     <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-medium">
-                        Le <span class="font-bold text-dtm-primary">DTM</span> : Un creuset d'excellence au service de
-                        la foi et de la santé.
+                        Le <span class="font-bold text-dtm-primary">DTM</span> : Un creuset d'excellence au service de la foi et de la santé.
                     </p>
                 </div>
-
-                <!-- Objectifs DTM -->
+                
+                <!-- Piliers résumés -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
                     <div class="activity-card animate-on-scroll" style="transition-delay: 0.2s;">
-                        <div
-                            class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-dtm-primary text-3xl">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-dtm-primary text-3xl">
                             <i class="fa-solid fa-hands-holding-child"></i>
                         </div>
-                        <h3 class="font-bold text-xl mb-2 text-gray-800">Piliers Social</h3>
-                        <p class="text-sm text-gray-500">Solidarité et consultations gratuites.</p>
+                        <h3 class="font-bold text-xl mb-2 text-gray-800">Engagement Social</h3>
+                        <p class="text-sm text-gray-500">Service communautaire, dons et consultations gratuites au service des populations et des Daaras.</p>
                     </div>
                     <div class="activity-card animate-on-scroll" style="transition-delay: 0.3s;">
-                        <div
-                            class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-green-600 text-3xl">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-green-600 text-3xl">
                             <i class="fa-solid fa-book-open-reader"></i>
                         </div>
-                        <h3 class="font-bold text-xl mb-2 text-gray-800">Piliers Pédagogique</h3>
-                        <p class="text-sm text-gray-500">Accompagnement et excellence académique.</p>
+                        <h3 class="font-bold text-xl mb-2 text-gray-800">Excellence Académique</h3>
+                        <p class="text-sm text-gray-500">Encadrement pédagogique via des tutorats et fascicules pour la réussite des étudiants en santé.</p>
                     </div>
                     <div class="activity-card animate-on-scroll" style="transition-delay: 0.4s;">
-                        <div
-                            class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 text-orange-600 text-3xl">
+                        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 text-orange-600 text-3xl">
                             <i class="fa-solid fa-mosque"></i>
                         </div>
-                        <h3 class="font-bold text-xl mb-2">Piliers Spirituel</h3>
-                        <p class="text-sm text-gray-500">Ziarra et dévotion aux Khassidas.</p>
+                        <h3 class="font-bold text-xl mb-2 text-gray-800">Formation Spirituelle</h3>
+                        <p class="text-sm text-gray-500">Consolidation de l'identité mouride à travers les valeurs de discipline et de droiture.</p>
                     </div>
                 </div>
-
             </section>
-            <!-- FIN INTRO & OBJECTIFS -->
 
             <hr class="border-gray-200 my-16">
 
-            <!-- 2. SECTION NOTRE HISTOIRE (TIMELINE) -->
+            <!-- 2. SECTION NOTRE HISTOIRE (AVEC VOTRE RÉSUMÉ ET IMAGES) -->
             <section class="section-bg bg-history rounded-3xl shadow-2xl overflow-hidden mb-20" id="histoire-section">
-                <div class="overlay-light rounded-3xl p-8 md:p-12">
-                    <h2 class="text-3xl font-extrabold text-dtm-dark mb-12 text-center animate-on-scroll"
-                        style="transition-delay: 0.2s;">Notre Histoire : Les Fondations du DTM</h2>
-
-                    <div class="timeline">
-
-                        <div class="timeline-item animate-on-scroll" style="transition-delay: 0.4s;">
-                            <div class="timeline-dot"></div>
-                            <h3 class="font-bold text-xl text-dtm-dark mb-1">La Première Réunion (Date/Année à préciser)
-                            </h3>
-                            <p class="text-sm text-gray-600">
-                                La première rencontre officielle a eu lieu au [Lieu exact ou général, Ex: Village J],
-                                rassemblant les premiers étudiants mourides en médecine. Cette réunion a posé les bases
-                                de l'organisation et défini les objectifs initiaux : l'entraide scolaire et la
-                                sauvegarde des valeurs spirituelles. Étaient notamment présents : [Nom 1], [Nom 2], [Nom
-                                3]...
-                            </p>
-                        </div>
-
-                        <div class="timeline-item animate-on-scroll" style="transition-delay: 0.6s;">
-                            <div class="timeline-dot"></div>
-                            <h3 class="font-bold text-xl text-dtm-dark mb-1">Formation du Premier Bureau</h3>
-                            <p class="text-sm text-gray-600">
-                                Suite à cette réunion, le premier Bureau du Dahira a été constitué.
-                                Le premier **Dieuwrine** fut [Nom du Premier Dieuwrine], dont la vision a guidé les
-                                premiers pas du Dahira.
-                                Ce premier bureau a formalisé les commissions et la structure administrative de
-                                l'association.
-                            </p>
-                        </div>
-
-                        <div class="timeline-item animate-on-scroll" style="transition-delay: 0.8s;">
-                            <div class="timeline-dot"></div>
-                            <h3 class="font-bold text-xl text-dtm-dark mb-1">Lancement des Activités Fondatrices</h3>
-                            <p class="text-sm text-gray-600">
-                                Rapidement, le Dahira a mis en place le Dahira hebdomadaire et a organisé ses premières
-                                séances de tutorat. Cet élan a consolidé le Dahira comme une structure essentielle pour
-                                les étudiants en médecine.
-                            </p>
-                        </div>
-
-                        <div class="timeline-item animate-on-scroll" style="transition-delay: 1.0s;">
-                            <div class="timeline-dot"></div>
-                            <h3 class="font-bold text-xl text-dtm-dark mb-1">Le DTM aujourd'hui</h3>
-                            <p class="text-sm text-gray-600">
-                                Aujourd'hui, le DTM est reconnu pour son engagement dans les consultations médicales
-                                annuelles et le rayonnement spirituel à l'UGB et au-delà.
-                            </p>
-                        </div>
-
-                        <!-- Bouton Suivant pour la section Historique -->
-                        <div class="text-center mt-10 animate-on-scroll" style="transition-delay: 1.2s;">
-                            <button
-                                onclick="document.getElementById('activites-section').scrollIntoView({ behavior: 'smooth' });"
-                                class="inline-block bg-dtm-primary text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-dtm-dark transition-colors">
-                                Activités Suivantes <i class="fa-solid fa-arrow-down ml-2"></i>
-                            </button>
-                        </div>
-
+                <div class="overlay-light rounded-3xl p-8 md:p-16">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
+                        <h2 class="text-3xl md:text-4xl font-extrabold text-dtm-dark text-center md:text-left animate-on-scroll">Notre Histoire</h2>
+                        
+                        <!-- BOUTON TÉLÉCHARGER HISTORIQUE COMPLET -->
+                        <!-- ⚠️ REMPLACEZ LE LIEN CI-DESSOUS PAR VOTRE LIEN GOOGLE DRIVE -->
+                        <a href="https://drive.google.com/VOTRE_LIEN_DRIVE_ICI" target="_blank" class="bg-dtm-dark text-white text-xs font-bold py-3 px-8 rounded-full shadow-lg hover:bg-dtm-primary transition-all animate-on-scroll flex items-center">
+                            <i class="fa-solid fa-file-pdf mr-2 text-lg"></i> Télécharger l'historique complet
+                        </a>
                     </div>
-                    <p class="text-center text-sm text-gray-500 mt-6 italic animate-on-scroll"
-                        style="transition-delay: 1.4s;">
-                    </p>
+                    
+                    <div class="history-text animate-on-scroll">
+                        <p>
+                            Le Dahira Touba Médecine de l’Université Gaston Berger de Saint-Louis est une organisation d’étudiants mourides créée le 1ᵉʳ décembre 2019. Elle vise à concilier formation spirituelle et excellence académique, notamment dans le domaine médical, tout en respectant les valeurs du Mouridisme : discipline, engagement, service et droiture.
+                        </p>
+
+                        <!-- IMAGE 1 -->
+                        <img src="img1.jpg" alt="Fondation DTM" class="history-img" onerror="this.src='https://placehold.co/1000x600/0c4a6e/white?text=IMAGE+1+-+DÉBUTS'">
+
+                        <p>
+                            Né à la suite de SAFARs organisés lors des Magal de Touba 2017 et 2018, le Dahira s’est structuré autour d’un bureau et de plusieurs commissions (scientifique, financière, communication, sociale, conservatoire, organisation, discipline, culturelle), sous la direction du Dieuwrine Serigne Moussa Sarre.
+                        </p>
+
+                        <!-- IMAGE 2 -->
+                        <img src="img2.jpg" alt="Structure DTM" class="history-img" onerror="this.src='https://placehold.co/1000x600/0c4a6e/white?text=IMAGE+2+-+STRUCTURE'">
+
+                        <p>
+                            Ses activités comprennent des rendez-vous hebdomadaires (Durus, Kureel, causeries religieuses et médicales, répétition du Kurel) ainsi que des événements annuels tels que les Journées Xassida et les journées de consultation médicale gratuite. Ces actions permettent de renforcer la spiritualité des membres, de former les étudiants au service communautaire et de consolider l’identité mouride au sein de l’université.
+                        </p>
+
+                        <!-- IMAGE 3 -->
+                        <img src="img3.jpg" alt="Activités DTM" class="history-img" onerror="this.src='https://placehold.co/1000x600/0c4a6e/white?text=IMAGE+3+-+ACTIVITÉS'">
+
+                        <p>
+                            Le Dahira prévoit également des projets pédagogiques (tutorats, fascicules, blouses), administratifs (récépissé, siège social, cellule TAM) et médico-sociaux (consultations, dons, accompagnement des daaras), tout en maintenant des liens avec le Khalife général des Mourides. Le Dahira Touba Médecine œuvre pour l’élévation spirituelle, l’excellence académique et le service communautaire, incarnant les valeurs du Mouridisme.
+                        </p>
+                    </div>
                 </div>
             </section>
-            <!-- FIN SECTION HISTORIQUE -->
-
 
             <hr class="border-gray-200 my-16">
 
-            <!-- 3. SECTION ACTIVITÉS DU DAHIRA -->
+            <!-- 3. SECTION ACTIVITÉS -->
             <section class="section-bg bg-activities rounded-3xl shadow-2xl mb-20" id="activites-section">
                 <div class="overlay-light rounded-3xl p-8 md:p-12">
-                    <h2 class="text-3xl font-extrabold text-dtm-dark mb-10 text-center animate-on-scroll">Nos Activités
-                        Annuelles & Hebdomadaires
-                    </h2>
+                    <h2 class="text-3xl font-extrabold text-dtm-dark mb-10 text-center animate-on-scroll">Activités Clés</h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-                        <!-- Activité 1: Dahira Hebdomadaire (Mise à jour avec Drouss/Koureel/Thèmes) -->
                         <div class="activity-card animate-on-scroll" style="transition-delay: 0.2s;">
                             <div class="text-dtm-primary mb-3"><i class="fa-solid fa-calendar-check text-2xl"></i></div>
-                            <h3 class="font-bold text-xl mb-2 text-gray-800">Dahira Hebdomadaire</h3>
-                            <p class="text-sm text-gray-600 mb-3">
-                                Réunion spirituelle et intellectuelle régulière.
-                            </p>
-                            <ul class="text-xs space-y-1 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                                <li class="font-bold text-dtm-dark"><i class="fa-solid fa-clock mr-2"></i> Tous les
-                                    Samedis
-                                    à partir de 21h</li>
-                                <li class="text-dtm-dark"><i class="fa-solid fa-book-open mr-2 text-red-500"></i>
-                                    Drouss & Koureel</li>
-                                <li class="text-dtm-dark"><i
-                                        class="fa-solid fa-chalkboard-teacher mr-2 text-green-600"></i> Présentation
-                                    de Thèmes medicales et religieux</li>
-                                <li><i class="fa-solid fa-location-dot mr-2 text-gray-500"></i> Siège : Village J, UGB
-                                </li>
-                            </ul>
+                            <h3 class="font-bold text-xl mb-2 text-gray-800">Hebdomadaire</h3>
+                            <p class="text-sm text-gray-600">Durus, Kureel, causeries religieuses et médicales au Village J.</p>
                         </div>
 
-                        <!-- Activité 2: Journée Khassida -->
                         <div class="activity-card animate-on-scroll" style="transition-delay: 0.4s;">
                             <div class="text-green-600 mb-3"><i class="fa-solid fa-book-quran text-2xl"></i></div>
-                            <h3 class="font-bold text-xl mb-2 text-gray-800">Journée Khassida (Annuel)</h3>
-                            <p class="text-sm text-gray-600">
-                                Événement annuel majeur dédié à la lecture et l'étude des œuvres de Cheikh Ahmadou
-                                Bamba.
-                            </p>
-                            <p class="text-xs italic text-gray-500 mt-3">
-                                <i class="fa-solid fa-users mr-1"></i> Rassemblement de la communauté mouride
-                                estudiantine.
-                            </p>
+                            <h3 class="font-bold text-xl mb-2 text-gray-800">Journées Xassida</h3>
+                            <p class="text-sm text-gray-600">Un grand rendez-vous annuel dédié à l'étude des œuvres du Cheikh.</p>
                         </div>
 
-                        <!-- Activité 3: Journée de Consultation Médicale -->
                         <div class="activity-card animate-on-scroll" style="transition-delay: 0.6s;">
                             <div class="text-orange-600 mb-3"><i class="fa-solid fa-stethoscope text-2xl"></i></div>
-                            <h3 class="font-bold text-xl mb-2 text-gray-800">Consultations Médicales (Annuel)</h3>
-                            <p class="text-sm text-gray-600">
-                                Organisation de journées de consultation et de sensibilisation médicale gratuites au
-                                profit
-                                des populations défavorisées.
-                            </p>
-                            <p class="text-xs italic text-gray-500 mt-3">
-                                <i class="fa-solid fa-heart-pulse mr-1"></i> Khidma médicale au service des autres.
-                            </p>
+                            <h3 class="font-bold text-xl mb-2 text-gray-800">Médico-Social</h3>
+                            <p class="text-sm text-gray-600">Organisation de consultations gratuites et de dons de médicaments.</p>
                         </div>
                     </div>
-
-                    <!-- Soutien CTA (4) (RETIRÉ) -->
-                    <!-- <div class="text-center mt-12 animate-on-scroll" style="transition-delay: 0.8s;">
-                        <h3 class="text-2xl font-extrabold text-dtm-dark mb-4">Soutenez nos actions sociales</h3>
-                        <button onclick="openDonationModal()" class="inline-block bg-yellow-500 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:bg-yellow-600 transition-colors">
-                            Faire un don / Soutenir <i class="fa-solid fa-hands-holding-circle ml-2"></i>
-                        </button>
-                    </div> -->
                 </div>
             </section>
-            <!-- FIN SECTION ACTIVITÉS -->
-
+            
             <hr class="border-gray-200 my-16">
 
-            <!-- 4. LE MOT DU DIEUWRINE (6) -->
-            <div class="bg-quote rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row animate-on-scroll"
-                id="quote-section" style="transition-delay: 0.2s;">
+            <!-- 4. LE MOT DU DIEUWRINE -->
+            <div class="bg-quote rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row animate-on-scroll" id="quote-section">
                 <div class="md:w-1/3 bg-dtm-dark relative">
                     <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop"
                         class="w-full h-full object-cover opacity-80 mix-blend-overlay">
-                    <div
-                        class="absolute bottom-0 left-0 p-6 text-white bg-gradient-to-t from-black/80 to-transparent w-full">
+                    <div class="absolute bottom-0 left-0 p-6 text-white bg-gradient-to-t from-black/80 to-transparent w-full">
                         <h3 class="text-xl font-bold">Serigne Moussa SARRE</h3>
-                        <p class="text-sm opacity-90">Dieuwrine Moral</p>
+                        <p class="text-sm opacity-90">Dieuwrine Moral du DTM</p>
                     </div>
                 </div>
-                <div class="md:w-2/3 p-8 md:p-12 flex flex-col justify-center">
+                <div class="md:w-2/3 p-8 md:p-12 flex flex-col justify-center text-dtm-dark">
                     <div class="mb-4 text-dtm-primary text-4xl"><i class="fa-solid fa-quote-left"></i></div>
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Le Mot du Dieuwrine</h2>
-                    <p class="text-gray-600 italic leading-relaxed mb-6">
-                        "Chers condisciples, la quête du savoir médical est un acte d'adoration lorsqu'elle est mise au
-                        service de l'humanité. Notre Dahira se veut être ce creuset d'excellence où la science rencontre
-                        la vertu. Restons unis dans l'effort et constants dans le service."
+                    <h2 class="text-2xl font-bold mb-4 uppercase tracking-tighter">Le Mot du Dieuwrine</h2>
+                    <p class="text-gray-600 italic leading-relaxed mb-6 text-justify">
+                        "Chers condisciples, la quête du savoir médical est un acte d'adoration lorsqu'elle est mise au service de l'humanité. Notre Dahira se veut être ce creuset d'excellence où la science rencontre la vertu."
                     </p>
-                    <div class="text-right text-dtm-dark font-semibold">
-                        — Actuel Dieuwrine du Dahira.
-                    </div>
+                    <div class="text-right font-bold">— Dieuwrine du Dahira Touba Médecine</div>
                 </div>
             </div>
-
+            
             <hr class="border-gray-200 my-16">
-
-            <!-- 5. SECTION ENGAGEMENT FINAL (FAQ, Contact & Localisation) -->
+            
+            <!-- 5. CONTACT & LOCALISATION -->
             <section class="section-bg bg-engagement rounded-3xl shadow-2xl mb-20" id="engagement-section">
                 <div class="overlay-light rounded-3xl p-8 md:p-12">
-
-                    <!-- FAQ INTERACTIVE (3) -->
-                    <h2 class="text-3xl font-extrabold text-dtm-dark mb-8 text-center animate-on-scroll"
-                        id="faq-section" style="transition-delay: 0.2s;">Foire Aux Questions</h2>
-                    <div id="faqContainer" class="space-y-4 max-w-4xl mx-auto">
-                        <div class="activity-card cursor-pointer" onclick="toggleFaq(this)"
-                            style="transition-delay: 0.4s;">
-                            <div class="flex justify-between items-center font-bold text-dtm-dark"><span
-                                    class="text-lg">Quelles sont les conditions pour adhérer au DTM ?</span> <i
-                                    class="fa-solid fa-chevron-down text-sm transition-transform"></i></div>
-                            <p class="text-gray-600 mt-3 text-sm hidden answer">Être étudiant(e) ou professionnel(le) de
-                                la santé et adhérer aux valeurs et principes du Mouridisme.</p>
-                        </div>
-                        <div class="activity-card cursor-pointer" onclick="toggleFaq(this)"
-                            style="transition-delay: 0.6s;">
-                            <div class="flex justify-between items-center font-bold text-dtm-dark"><span
-                                    class="text-lg">Comment se déroulent les Dahira hebdomadaires ?</span> <i
-                                    class="fa-solid fa-chevron-down text-sm transition-transform"></i></div>
-                            <p class="text-gray-600 mt-3 text-sm hidden answer">Les Dahira ont lieu tous les samedis à
-                                21h au Village J. Ils incluent les activites suivantantes : Drouss, Koureel et
-                                presentation de themes religieux et medicales.</p>
-                        </div>
-                        <div class="activity-card cursor-pointer" onclick="toggleFaq(this)"
-                            style="transition-delay: 0.8s;">
-                            <div class="flex justify-between items-center font-bold text-dtm-dark"><span
-                                    class="text-lg">Quel est l'impact social du DTM ?</span> <i
-                                    class="fa-solid fa-chevron-down text-sm transition-transform"></i></div>
-                            <p class="text-gray-600 mt-3 text-sm hidden answer">Nous organisons des journées de
-                                consultation gratuite.</p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
-                        <!-- Contact CTA (7) (Mise à jour vers mailto) -->
-                        <div class="activity-card animate-on-scroll" style="transition-delay: 1.0s;">
-                            <h3 class="text-xl font-extrabold text-dtm-dark mb-4"><i
-                                    class="fa-solid fa-comments mr-2"></i> Suggestions</h3>
-                            <p class="text-gray-600 mb-6 text-sm">
-                                Si vous avez des questions spécifiques ou souhaitez proposer de nouvelles idées.
-                            </p>
-                            <a href="mailto:dtm.ugb@gmail.com"
-                                class="inline-block bg-orange-500 text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-orange-600 transition-colors">
-                                Contacter le Bureau <i class="fa-solid fa-envelope ml-2"></i>
+                    <h2 class="text-3xl font-extrabold text-dtm-dark mb-12 text-center animate-on-scroll">Nous Rejoindre</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                        <div class="activity-card animate-on-scroll">
+                            <h3 class="text-xl font-extrabold text-dtm-dark mb-4"><i class="fa-solid fa-envelope mr-2"></i> Bureau Officiel</h3>
+                            <p class="text-gray-600 mb-6 text-sm">Pour toute question administrative ou proposition de partenariat.</p>
+                            <a href="mailto:dtm.ugb@gmail.com" class="inline-block bg-dtm-primary text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-dtm-dark transition-colors">
+                                dtm.ugb@gmail.com
                             </a>
                         </div>
-
-                        <!-- Localisation (9) -->
-                        <div class="activity-card animate-on-scroll" style="transition-delay: 1.2s;">
-                            <h3 class="text-xl font-extrabold text-dtm-dark mb-4"><i
-                                    class="fa-solid fa-location-dot mr-2"></i> Notre Siège</h3>
-                            <p class="text-gray-600 mb-4 text-sm">
-                                Retrouvez-nous pour les Dahira hebdomadaires au Village J (UGB).
-                            </p>
-                            <!-- Carte Google Maps -->
-                            <div
-                                class="h-40 w-full bg-gray-200 rounded-xl overflow-hidden shadow-inner flex items-center justify-center">
-                                <iframe
-                                    src="https://maps.google.com/maps?q=Universit%C3%A9%20Gaston%20Berger%20Saint-Louis&t=&z=13&ie=UTF8&iwloc=&output=embed"
-                                    width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
-                                </iframe>
+                        
+                        <div class="activity-card animate-on-scroll">
+                            <h3 class="text-xl font-extrabold text-dtm-dark mb-4"><i class="fa-solid fa-location-dot mr-2"></i> Notre Siège</h3>
+                            <p class="text-gray-600 mb-4 text-sm">Nous nous réunissons chaque samedi au Village J (UGB).</p>
+                            <div class="h-40 w-full bg-gray-100 rounded-xl overflow-hidden shadow-inner flex items-center justify-center">
+                                <iframe src="https://maps.google.com/maps?q=Universit%C3%A9%20Gaston%20Berger%20Saint-Louis&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
-            <!-- FIN SECTION ENGAGEMENT FINAL -->
-
         </div>
     </div>
-
-    <!-- Pied de page (Liens sociaux retirés) -->
+    
     <footer class="bg-dtm-dark text-white py-8 text-center">
-        <p class="text-sm opacity-80 mb-4">
-            © 2025 Dahira Touba Médecine UGB.
-        </p>
-        <div class="flex justify-center space-x-4">
-            <a href="mailto:dtm.ugb@gmail.com" class="text-white hover:text-dtm-light transition-colors font-medium">
-                dtm.ugb@gmail.com
-            </a>
-        </div>
+        <p class="text-sm opacity-80">© 2025 Dahira Touba Médecine UGB.</p>
     </footer>
 
     <script>
-        // Rendre la fonction openDonationModal globale (la fonction elle-même n'est plus utile, le bouton ayant été retiré)
-        // window.openDonationModal = function() {
-        //     document.getElementById('donationModal').classList.remove('hidden');
-        // };
-
-        // JavaScript pour l'animation au défilement (Intersection Observer)
         document.addEventListener('DOMContentLoaded', () => {
             const loadingOverlay = document.getElementById('loadingOverlay');
-
-            // Fait disparaître l'overlay après 500ms
             setTimeout(() => {
                 loadingOverlay.style.opacity = '0';
-                setTimeout(() => {loadingOverlay.style.display = 'none';}, 500);
+                setTimeout(() => { loadingOverlay.style.display = 'none'; }, 500);
             }, 500);
 
-
-            const elements = document.querySelectorAll('.animate-on-scroll');
-
-            const observerOptions = {
-                root: null, // viewport
-                rootMargin: '0px',
-                threshold: 0.1 // Déclenche quand 10% de l'élément est visible
-            };
-
-            const observer = new IntersectionObserver((entries, observer) => {
+            const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        // L'élément est visible, ajouter la classe d'animation
                         entry.target.classList.add('fade-in');
-                        // Optionnel: arrêter d'observer après l'animation
                         observer.unobserve(entry.target);
                     }
                 });
-            }, observerOptions);
+            }, { threshold: 0.1 });
 
-            elements.forEach(element => {
-                // Application du délai de transition défini dans le style HTML
-                observer.observe(element);
-            });
-
-            // Logique de la barre de progression (3)
-            window.onscroll = function () {
-                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-                const scrolled = (winScroll / height) * 100;
+            document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+            
+            window.onscroll = function() {
+                const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
                 document.getElementById("scrollProgress").style.width = scrolled + "%";
             };
         });
 
-        // Logique FAQ Interactive (3)
-        window.toggleFaq = function (element) {
+        function toggleFaq(element) {
             const answer = element.querySelector('.answer');
             const icon = element.querySelector('.fa-chevron-down');
-
-            // Fermer toutes les autres
-            document.querySelectorAll('#faqContainer .activity-card').forEach(item => {
-                if (item !== element) {
-                    item.querySelector('.answer').classList.add('hidden');
-                    item.querySelector('.fa-chevron-down').classList.remove('rotate-180');
-                }
-            });
-
-            // Ouvrir/Fermer la réponse cliquée
             answer.classList.toggle('hidden');
             icon.classList.toggle('rotate-180');
         }
