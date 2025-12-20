@@ -112,31 +112,31 @@
             }
         }
 
-        /* Animation de flottement personnalisée */
-        @keyframes float {
+        /* Animation de Zoom Continu (Pulsation) */
+        @keyframes zoomPulse {
             0% {
-                transform: translateY(0px);
+                transform: scale(1);
             }
 
             50% {
-                transform: translateY(-12px);
+                transform: scale(1.05);
             }
 
+            /* Zoom léger à 105% */
             100% {
-                transform: translateY(0px);
+                transform: scale(1);
             }
         }
 
-        /* Styles spécifiques pour l'historique textuel */
         .history-text p {
             @apply mb-6 text-gray-700 leading-relaxed text-justify text-base md:text-lg;
         }
 
-        /* Modification : Border radius 50px et Animation appliqués */
+
         .history-img {
             @apply w-full h-64 md:h-96 object-cover shadow-xl my-10 border-4 border-white;
-            border-radius: 50px;
-            animation: float 6s ease-in-out infinite;
+            border-radius: 20px;
+            animation: zoomPulse 8s ease-in-out infinite;
         }
     </style>
 </head>
@@ -174,7 +174,8 @@
                 <a href="index.html" class="flex items-center space-x-3 group">
                     <img src="logo.png" class="h-14 md:h-20 w-auto transition-transform group-hover:scale-105"
                         alt="DTM Logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1034/1034179.png'">
-                    <span class="self-center text-2xl font-extrabold text-dtm-dark hidden sm:block">DTM UGB</span>
+                    <span class="self-center text-2xl font-extrabold text-dtm-dark hidden sm:block">Dahira Touba
+                        Médecine</span>
                 </a>
                 <a href="index.html"
                     class="text-dtm-primary font-bold hover:underline py-2 px-4 rounded-full hover:bg-dtm-light transition-colors"><i
@@ -190,7 +191,7 @@
                     <h1 class="text-5xl md:text-6xl font-extrabold text-dtm-dark mb-4 tracking-tight">Le Dahira Touba
                         Médecine</h1>
                     <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-medium">
-                    Un creuset d'excellence au service de
+                        Un creuset d'excellence au service de
                         la foi et de la santé.
                     </p>
                 </div>
@@ -227,6 +228,7 @@
                 </div>
             </section>
 
+            <hr class="border-gray-200 my-16">
 
             <!-- 2. SECTION NOTRE HISTOIRE (AVEC IMAGES ANIMÉES ET ROUNDED 50PX) -->
             <section class="section-bg bg-history rounded-3xl shadow-2xl overflow-hidden mb-20" id="histoire-section">
@@ -237,7 +239,7 @@
                             Notre Histoire</h2>
 
                         <!-- BOUTON TÉLÉCHARGER HISTORIQUE COMPLET -->
-                        <a href="https://drive.google.com/file/d/1dRgyV7x-Z0CWWA03WJ-ZYj9qYMdMiYxP/view?usp=drive_link"
+                        <a href="https://drive.google.com/file/d/1Gw-MyABSFO7SCHBSMmnZdnwCVEqxkIC3/view?usp=drive_link/preview"
                             target="_blank"
                             class="bg-dtm-dark text-white text-xs font-bold py-3 px-8 rounded-full shadow-lg hover:bg-dtm-primary transition-all animate-on-scroll flex items-center">
                             <i class="fa-solid fa-file-pdf mr-2 text-lg"></i> Télécharger l'historique complet
@@ -356,9 +358,7 @@
                     <div class="mb-4 text-dtm-primary text-4xl"><i class="fa-solid fa-quote-left"></i></div>
                     <h2 class="text-2xl font-bold mb-4 uppercase tracking-tighter">Le Mot du Dieuwrine</h2>
                     <p class="text-gray-600 italic leading-relaxed mb-6 text-justify text-lg">
-                        "Chers condisciples, la quête du savoir médical est un acte d'adoration lorsqu'elle est mise au
-                        service de l'humanité. Notre Dahira se veut être ce creuset d'excellence où la science rencontre
-                        la vertu."
+                        "A remplir..."
                     </p>
                     <div class="text-right mt-4">
                         <div class="font-bold text-xl text-dtm-dark">Serigne Moussa SARRE</div>
@@ -445,4 +445,3 @@
 </body>
 
 </html>
-
