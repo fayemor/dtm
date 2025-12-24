@@ -405,6 +405,14 @@
                     allUsersData.push(u);
                 });
 
+                // --- MODIFICATION : TRI PAR PRÉNOM ICI ---
+                allUsersData.sort((a, b) => {
+                    const nameA = (a.prenom || "").toLowerCase();
+                    const nameB = (b.prenom || "").toLowerCase();
+                    return nameA.localeCompare(nameB);
+                });
+                // ----------------------------------------
+
                 displayMembers(allUsersData);
 
             } catch (e) {
